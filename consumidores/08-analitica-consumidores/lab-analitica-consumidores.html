@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consumidores · Analítica · IBM API Connect v12</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@300;400&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ibm-blue-60: #0F62FE; --ibm-blue-80: #002D9C; --ibm-navy: #001D6C;
+      --ibm-teal-50: #009D9A; --ibm-gray-10: #F4F4F4; --ibm-gray-20: #E0E0E0;
+      --ibm-gray-60: #6F6F6F; --ibm-gray-80: #393939; --ibm-white: #FFFFFF;
+      --ibm-black: #161616; --ibm-purple: #6929C4; --ibm-red: #DA1E28;
+      --ibm-green: #198038; --ibm-amber: #B4530A;
+    }
+    html { font-size: 15px; scroll-behavior: smooth; }
+    body { font-family: 'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif; font-weight: 300; color: var(--ibm-black); background: var(--ibm-gray-10); line-height: 1.55; min-height: 100vh; }
+
+    /* HERO */
+    .hero { background: var(--ibm-navy); color: var(--ibm-white); padding: 0 64px; min-height: 44vh; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--ibm-blue-60); }
+    .hero-grid { position: absolute; top: 0; right: 0; width: 45%; height: 100%; opacity: 0.04; background-image: repeating-linear-gradient(0deg,#fff 0,#fff 1px,transparent 1px,transparent 60px), repeating-linear-gradient(90deg,#fff 0,#fff 1px,transparent 1px,transparent 60px); }
+    .hero-accent { position: absolute; bottom: -120px; right: -120px; width: 380px; height: 380px; border-radius: 50%; border: 1px solid rgba(15,98,254,0.25); }
+    .hero-accent::after { content: ''; position: absolute; top: 40px; left: 40px; right: 40px; bottom: 40px; border-radius: 50%; border: 1px solid rgba(15,98,254,0.15); }
+    .hero-inner { position: relative; z-index: 2; max-width: 900px; padding: 60px 0 52px; }
+    .hero-eyebrow { font-size: 11px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+    .hero-eyebrow::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--ibm-blue-60); }
+    .hero-badges { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .hero-badge { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 2px; }
+    .hero-badge-lab { background: var(--ibm-blue-60); color: #fff; }
+    .hero-badge-bloque { background: #393939; color: #fff; }
+    .hero-title { font-size: clamp(26px, 3.5vw, 46px); font-weight: 300; line-height: 1.1; max-width: 680px; margin-bottom: 8px; }
+    .hero-title em { font-style: normal; color: var(--ibm-blue-60); }
+    .hero-tagline { font-size: 14px; font-weight: 300; color: rgba(255,255,255,0.55); margin-top: 16px; max-width: 560px; line-height: 1.65; }
+    .hero-divider { width: 48px; height: 2px; background: var(--ibm-blue-60); margin: 28px 0; }
+    .hero-meta { display: flex; gap: 40px; flex-wrap: wrap; }
+    .meta-item { display: flex; flex-direction: column; gap: 4px; }
+    .meta-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.38); font-weight: 400; }
+    .meta-value { font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.85); }
+
+    /* CONTENT */
+    .content { max-width: 900px; margin: 0 auto; padding: 56px 32px 96px; }
+
+    /* SECTION LABEL */
+    .section-label { font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ibm-gray-60); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--ibm-gray-20); }
+
+    /* NN CALLOUT */
+    .nn-callout { background: var(--ibm-navy); color: var(--ibm-white); border-radius: 2px; padding: 22px 26px; margin-bottom: 48px; display: flex; gap: 18px; align-items: flex-start; }
+    .nn-icon { flex-shrink: 0; width: 38px; height: 38px; background: var(--ibm-blue-60); border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; font-family: 'IBM Plex Mono', monospace; color: #fff; }
+    .nn-body { flex: 1; }
+    .nn-body strong { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ibm-blue-60); margin-bottom: 8px; }
+    .nn-body p { font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.65; }
+    .nn-badge { display: inline-block; background: var(--ibm-blue-60); color: #fff; font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 1px 6px; border-radius: 2px; }
+    .nn-mono { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.85); }
+
+    /* TOC */
+    .toc { background: var(--ibm-white); border: 1px solid var(--ibm-gray-20); border-left: 4px solid var(--ibm-blue-60); border-radius: 2px; padding: 22px 26px; margin-bottom: 48px; }
+    .toc-title { font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ibm-gray-60); margin-bottom: 14px; }
+    .toc ol { padding-left: 18px; }
+    .toc li { margin-bottom: 5px; font-size: 13px; color: var(--ibm-gray-80); }
+    .toc ol ol { margin-top: 4px; }
+    .toc a { color: var(--ibm-blue-60); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+
+    /* SECTION HEADING */
+    h2.sec-heading { font-size: 18px; font-weight: 400; color: var(--ibm-black); margin-top: 48px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--ibm-gray-20); }
+
+    /* STEP CARDS */
+    .step { background: var(--ibm-white); border: 1px solid var(--ibm-gray-20); border-radius: 2px; margin-bottom: 16px; overflow: hidden; }
+    .step-header { display: flex; align-items: center; gap: 14px; background: var(--ibm-gray-10); padding: 10px 18px; border-bottom: 1px solid var(--ibm-gray-20); }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--ibm-blue-60); color: #fff; font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'IBM Plex Mono', monospace; }
+    .step-header strong { font-size: 13px; font-weight: 500; color: var(--ibm-black); }
+    .step-body { padding: 16px 18px; }
+    .step-body p { font-size: 13px; color: var(--ibm-gray-80); margin-bottom: 10px; line-height: 1.6; }
+    .step-body p:last-child { margin-bottom: 0; }
+
+    /* CALLOUTS */
+    .callout { border-radius: 2px; padding: 12px 16px; margin: 12px 0; font-size: 13px; line-height: 1.6; }
+    .callout-info { background: #EDF5FF; border-left: 4px solid var(--ibm-blue-60); color: var(--ibm-gray-80); }
+    .callout-warn { background: #FFF8E1; border-left: 4px solid #F1C21B; color: var(--ibm-gray-80); }
+    .callout-ok   { background: #DEFBE6; border-left: 4px solid var(--ibm-green); color: var(--ibm-gray-80); }
+    .callout > strong { display: block; margin-bottom: 4px; font-weight: 500; }
+
+    /* CODE */
+    code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; background: #EDF5FF; color: var(--ibm-purple); padding: 1px 5px; border-radius: 2px; border: 1px solid #D0E2FF; }
+
+    /* TABLES */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+    th { background: var(--ibm-gray-10); text-align: left; padding: 8px 12px; border: 1px solid var(--ibm-gray-20); font-weight: 500; font-size: 12px; letter-spacing: 0.04em; color: var(--ibm-gray-80); }
+    td { padding: 8px 12px; border: 1px solid var(--ibm-gray-20); vertical-align: top; font-size: 13px; color: var(--ibm-gray-80); }
+    tr:nth-child(even) td { background: #fafafa; }
+
+    /* CONCEPT BOX */
+    .concept-box { background: var(--ibm-white); border: 1px solid var(--ibm-gray-20); border-top: 3px solid var(--ibm-teal-50); border-radius: 2px; padding: 20px 24px; margin: 20px 0; }
+    .concept-box-title { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ibm-teal-50); margin-bottom: 10px; }
+    .concept-box p { font-size: 13px; color: var(--ibm-gray-80); line-height: 1.65; margin-bottom: 8px; }
+    .concept-box p:last-child { margin-bottom: 0; }
+
+    /* REPORT GRID */
+    .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+    .report-card { background: var(--ibm-white); border: 1px solid var(--ibm-gray-20); border-radius: 2px; padding: 14px 16px; }
+    .report-card-title { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ibm-blue-60); margin-bottom: 6px; }
+    .report-card p { font-size: 12px; color: var(--ibm-gray-60); line-height: 1.55; }
+
+    /* CHECKLIST */
+    .checklist { list-style: none; padding: 0; margin: 8px 0; }
+    .checklist li { font-size: 13px; color: var(--ibm-gray-80); margin-bottom: 8px; position: relative; padding-left: 22px; line-height: 1.55; }
+    .checklist li::before { content: '☐'; font-size: 14px; color: var(--ibm-blue-60); position: absolute; left: 0; top: 0; line-height: 1.55; }
+
+    /* TOP NAV BAR */
+    .top-nav {
+      position: sticky; top: 0; left: 0; width: 100%; height: 48px;
+      background: var(--ibm-navy); border-bottom: 1px solid rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; z-index: 1000;
+    }
+    .top-nav-title {
+      font-size: 13px; font-weight: 400; color: #fff; display: flex; align-items: center; gap: 8px;
+    }
+    .top-nav-title strong { font-weight: 600; }
+    .top-nav-title span { color: rgba(255,255,255,0.5); }
+    .top-nav-actions { display: flex; align-items: center; gap: 12px; }
+    .btn-lab-setup {
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);
+      color: #fff; font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 500;
+      padding: 5px 12px; border-radius: 2px; cursor: pointer; display: flex; align-items: center; gap: 8px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .btn-lab-setup:hover {
+      background: rgba(255,255,255,0.2); border-color: var(--ibm-blue-60);
+    }
+    .btn-lab-setup .setup-badge {
+      background: var(--ibm-blue-60); color: #fff; font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px; padding: 1px 6px; border-radius: 2px;
+    }
+
+    /* MODAL LAB SETUP */
+    .modal-backdrop {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.65); backdrop-filter: blur(2px);
+      display: none; align-items: center; justify-content: center; z-index: 9999;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: var(--ibm-white); border-radius: 4px; box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+      width: 100%; max-width: 480px; padding: 28px; position: relative; animation: modalIn 0.2s ease-out;
+    }
+    @keyframes modalIn {
+      from { transform: translateY(-12px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-eyebrow {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ibm-blue-60); margin-bottom: 6px;
+    }
+    .modal-title {
+      font-size: 20px; font-weight: 400; color: var(--ibm-black); margin-bottom: 12px;
+    }
+    .modal-desc {
+      font-size: 13px; color: var(--ibm-gray-60); line-height: 1.5; margin-bottom: 20px;
+    }
+    .modal-close-btn {
+      position: absolute; top: 20px; right: 20px; background: transparent; border: none;
+      font-size: 18px; color: var(--ibm-gray-60); cursor: pointer; padding: 4px 8px; line-height: 1;
+    }
+    .modal-close-btn:hover { color: var(--ibm-black); }
+    .modal-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;
+    }
+    .modal-field { display: flex; flex-direction: column; gap: 6px; }
+    .modal-label {
+      font-size: 12px; font-weight: 500; color: var(--ibm-gray-80);
+    }
+    .modal-input {
+      font-family: 'IBM Plex Mono', monospace; font-size: 14px;
+      padding: 8px 12px; border: 1px solid var(--ibm-gray-20); border-radius: 2px;
+      background: var(--ibm-gray-10); color: var(--ibm-black); outline: none;
+    }
+    .modal-input:focus { border-color: var(--ibm-blue-60); background: #fff; }
+    .modal-preview-card {
+      background: var(--ibm-gray-10); border: 1px solid var(--ibm-gray-20); border-radius: 2px;
+      padding: 12px 14px; margin-bottom: 20px;
+    }
+    .modal-preview-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ibm-gray-60); margin-bottom: 4px; }
+    .modal-preview-val { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; color: var(--ibm-blue-60); }
+    .modal-footer {
+      display: flex; justify-content: flex-end; gap: 12px;
+    }
+    .btn-secondary {
+      background: transparent; border: 1px solid var(--ibm-gray-20); color: var(--ibm-black);
+      padding: 8px 16px; font-size: 13px; font-weight: 400; border-radius: 2px; cursor: pointer;
+    }
+    .btn-secondary:hover { background: var(--ibm-gray-10); }
+    .btn-primary {
+      background: var(--ibm-blue-60); border: 1px solid var(--ibm-blue-60); color: #fff;
+      padding: 8px 20px; font-size: 13px; font-weight: 500; border-radius: 2px; cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--ibm-blue-80); }
+
+    /* BACK TO TOP */
+    #btn-back-top {
+      position: fixed; bottom: 28px; right: 28px;
+      width: 40px; height: 40px;
+      background: var(--ibm-blue-60); color: #fff;
+      border: none; border-radius: 50%;
+      font-size: 18px; line-height: 1; cursor: pointer;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 900;
+    }
+    #btn-back-top.visible { opacity: 1; pointer-events: auto; }
+    #btn-back-top:hover { background: var(--ibm-blue-80); }
+
+    /* FOOTER */
+    .page-footer { border-top: 1px solid var(--ibm-gray-20); padding: 20px 32px; max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--ibm-gray-60); }
+    .footer-ibm { font-weight: 500; letter-spacing: 0.06em; }
+
+    @media (max-width: 720px) {
+      .hero { padding: 0 28px; }
+      .hero-meta { gap: 24px; }
+      .content { padding: 40px 20px 64px; }
+      .report-grid { grid-template-columns: 1fr; }
+      .modal-grid { grid-template-columns: 1fr; }
+      .top-nav { padding: 0 16px; }
+    }
+  </style>
+  <script src="../../datos-ambiente.js"></script>
+</head>
+<body>
+
+<!-- TOP NAV BAR -->
+<nav class="top-nav">
+  <div class="top-nav-title">
+    <strong>API Connect</strong>
+    <span>| <a href="../../Landing_Labs_APIC_BancoProvincia.html#index-consumidores" style="color:rgba(255,255,255,0.7);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Experiencia de Consumidores</a>
+    </span>
+  </div>
+  <div class="top-nav-actions">
+    <button type="button" class="btn-lab-setup" id="btn-open-setup" onclick="openLabSetupModal()">
+      <span>Lab setup</span>
+      <span class="setup-badge" id="nav-setup-badge">demo01</span>
+    </button>
+  </div>
+</nav>
+
+<!-- MODAL LAB SETUP -->
+<div class="modal-backdrop" id="modal-setup" onclick="handleBackdropClick(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button type="button" class="modal-close-btn" onclick="closeLabSetupModal()">✕</button>
+    <div class="modal-eyebrow">Personalizar este laboratorio</div>
+    <h2 class="modal-title">Lab setup</h2>
+    <p class="modal-desc">
+      Ingresá la abreviatura de 4 letras de tu nombre y el número de ambiente de 2 dígitos asignado para personalizar todos los recursos, nombres y comandos del lab.
+    </p>
+    <div class="modal-grid">
+      <div class="modal-field">
+        <label class="modal-label" for="setup-abbr">Abreviatura (4 letras)</label>
+        <input type="text" id="setup-abbr" class="modal-input" maxlength="4" placeholder="CECI" oninput="updateSetupPreview()" autocomplete="off" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="setup-num">Número de ambiente (2 dígitos)</label>
+        <input type="text" id="setup-num" class="modal-input" maxlength="2" placeholder="01" oninput="updateSetupPreview()" autocomplete="off" />
+      </div>
+    </div>
+    <div class="modal-preview-card">
+      <div class="modal-preview-label">Tu identificador de recursos (ID prefix)</div>
+      <div class="modal-preview-val" id="setup-preview">ceci01</div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" onclick="closeLabSetupModal()">Cancelar</button>
+      <button type="button" class="btn-primary" onclick="saveLabSetup()">Guardar setup</button>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-accent"></div>
+  <div class="hero-inner">
+    <p class="hero-eyebrow">IBM · Banco Provincia · 2026</p>
+    <div class="hero-badges">
+      <span class="hero-badge hero-badge-lab">Laboratorio Práctico</span>
+      <span class="hero-badge hero-badge-bloque">Experiencia Consumidores</span>
+    </div>
+    <h1 class="hero-title">Analítica para <em>consumidores de APIs</em></h1>
+    <p class="hero-tagline">
+      Exploración del consumo de APIs desde el portal para desarrolladores
+    </p>
+    <div class="hero-divider"></div>
+    <div class="hero-meta">
+      <div class="meta-item"><span class="meta-label">Plataforma</span><span class="meta-value">IBM API Connect v12 · Developer Portal</span></div>
+      <div class="meta-item"><span class="meta-label">Perspectiva</span><span class="meta-value">Consumidor de APIs</span></div>
+      <div class="meta-item"><span class="meta-label">Prerrequisito</span><span class="meta-value">Lab Portal de Desarrolladores</span></div>
+      <div class="meta-item"><span class="meta-label">Duración</span><span class="meta-value">~15 min</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT -->
+<main class="content">
+
+  <!-- NN CALLOUT -->
+  <div class="nn-callout">
+    <div class="nn-icon" id="callout-env-icon">ID</div>
+    <div class="nn-body">
+      <strong>Tu identificador de laboratorio</strong>
+      <p>
+        Para evitar colisiones de nombres con los demás participantes en el ambiente APIC compartido, este lab utiliza tu identificador personalizado
+        <span class="nn-badge" id="callout-env-badge">ceci01</span> (4 letras de tu nombre + 2 dígitos de ambiente). Podés cambiarlo en cualquier momento desde el botón <button type="button" onclick="openLabSetupModal()" style="background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:2px;padding:1px 6px;cursor:pointer;font-size:11px;font-family:'IBM Plex Sans',sans-serif;">Lab setup</button> en la barra superior.
+      </p>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <p class="toc-title">Contenido</p>
+    <ol>
+      <li><a href="#sec-pasos">Pasos del laboratorio</a>
+        <ol style="margin-top:4px">
+          <li><a href="#sec-paso1">Paso 1: Abrir el Developer Portal en una nueva pestaña</a></li>
+          <li><a href="#sec-paso2">Paso 2: Navegar a la sección Apps</a></li>
+          <li><a href="#sec-paso3">Paso 3: Seleccionar tu aplicación</a></li>
+          <li><a href="#sec-paso4">Paso 4: Dashboard de consumo por aplicación</a></li>
+          <li><a href="#sec-paso5">Paso 5: Auditar un evento en el historial de API Calls</a></li>
+          <li><a href="#sec-paso6">Paso 6: Analítica por organización consumidora</a></li>
+        </ol>
+      </li>
+      <li><a href="#sec-verificacion">Verificación</a></li>
+    </ol>
+  </div>
+
+  <!-- PASOS -->
+  <h2 class="sec-heading" id="sec-pasos">Pasos del laboratorio</h2>
+
+  <!-- PASO 1 -->
+  <p class="section-label" id="sec-paso1" style="margin-top:8px">Paso 1: Acceder al portal</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">1</div><strong>Abrir el Developer Portal en una nueva pestaña</strong></div>
+    <div class="step-body">
+      <p>Abrí una nueva pestaña en tu navegador y navegá a la URL del Developer Portal de tu ambiente:</p>
+      <p id="portal-url-display" style="font-family:'IBM Plex Mono',monospace;font-size:13px;background:#EDF5FF;color:#6929C4;padding:8px 12px;border-radius:2px;border:1px solid #D0E2FF;margin:10px 0;word-break:break-all;"></p>
+      <p>Hacé click en el botón <strong>Iniciar sesión</strong> (arriba a la derecha) e ingresá con las credenciales de tu cuenta de desarrollador / consumidor creada en el laboratorio anterior.</p>
+      <img src="assets/images/01-iniciar-sesion.png" alt="Página de inicio de sesión del Developer Portal" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <div class="callout callout-info">
+        <strong>Recordatorio</strong>
+        <p>El Developer Portal es tu punto central de autogestión: además de permitirte descubrir APIs y suscribirte a productos, te ofrece visibilidad en tiempo real sobre el tráfico, los tiempos de respuesta y la cuota de uso de tus aplicaciones sin depender de los equipos de infraestructura.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 2 -->
+  <p class="section-label" id="sec-paso2" style="margin-top:32px">Paso 2: Navegar a Apps</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">2</div><strong>Ir a la opción Apps en la barra superior</strong></div>
+    <div class="step-body">
+      <p>En la barra superior de navegación del Developer Portal, hacé click en la opción <strong>Apps</strong>.</p>
+      <img src="assets/images/02-apps.png" alt="Barra superior de navegación con la opción Apps resaltada" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+
+  <!-- PASO 3 -->
+  <p class="section-label" id="sec-paso3" style="margin-top:32px">Paso 3: Seleccionar tu aplicación</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">3</div><strong>Elegir tu aplicación</strong></div>
+    <div class="step-body">
+      <p>En el listado de aplicaciones, hacé click sobre el nombre de tu aplicación (<code class="dyn-val" data-prefix="app-">app-ceci01</code>) para abrir su panel de administración.</p>
+      <p>Cada aplicación cuenta con su propia vista de analítica aislada. Esto permite a los desarrolladores evaluar de forma granular el rendimiento y volumen de consumo de un componente o proyecto específico, sin mezclar sus métricas con las de otras aplicaciones de la organización.</p>
+    </div>
+  </div>
+
+  <!-- PASO 4 -->
+  <p class="section-label" id="sec-paso4" style="margin-top:32px">Paso 4: Dashboard de consumo por aplicación</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">4</div><strong>Dashboard de consumo por aplicación</strong></div>
+    <div class="step-body">
+      <p>En esta pantalla podrás analizar el comportamiento operativo y el consumo histórico de tu aplicación. El panel consolida métricas clave (volumen total de llamadas, tasa de errores, latencia media) y reportes visuales prediseñados:</p>
+
+      <img src="assets/images/04-analitica-app.png" alt="Dashboard de consumo de la aplicación - KPIs y primeros gráficos" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+
+      <div class="report-grid">
+        <div class="report-card">
+          <p class="report-card-title">Cantidad de llamados en un período de tiempo</p>
+          <p>Muestra la evolución del volumen total de invocaciones recibidas por la aplicación a lo largo del tiempo.</p>
+        </div>
+        <div class="report-card">
+          <p class="report-card-title">Status codes</p>
+          <p>Distribución de las respuestas según el código HTTP (éxitos 200 vs errores 4xx/5xx).</p>
+        </div>
+        <div class="report-card">
+          <p class="report-card-title">Top products over time</p>
+          <p>Muestra los Productos de APIs más consumidos por la aplicación en el período analizado.</p>
+        </div>
+        <div class="report-card">
+          <p class="report-card-title">Top APIs over time</p>
+          <p>Evolución temporal de las APIs que registraron el mayor volumen de tráfico.</p>
+        </div>
+        <div class="report-card">
+          <p class="report-card-title">Number of throttled API calls</p>
+          <p>Cantidad de llamadas bloqueadas por superar el límite de velocidad (Rate Limit) del plan contratado.</p>
+        </div>
+        <div class="report-card">
+          <p class="report-card-title">Number of errors</p>
+          <p>Seguimiento de llamadas fallidas para identificar anomalías operativas.</p>
+        </div>
+      </div>
+
+      <img src="assets/images/04b-analitica-app.png" alt="Dashboard de consumo de la aplicación - Tiempos de respuesta y rutas" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+
+      <div class="report-grid">
+        <div class="report-card">
+          <p class="report-card-title">APIs with slowest response time</p>
+          <p>Identifica las operaciones con mayor latencia promedio para detectar cuellos de botella.</p>
+        </div>
+        <div class="report-card">
+          <p class="report-card-title">APIs with fastest response time</p>
+          <p>Lista las APIs con menor tiempo de respuesta y mejor rendimiento global.</p>
+        </div>
+        <div class="report-card" style="grid-column: 1 / -1;">
+          <p class="report-card-title">Top API paths by calls</p>
+          <p>Desglose de los paths o rutas específicas con mayor cantidad de invocaciones.</p>
+        </div>
+      </div>
+
+      <img src="assets/images/04c-analitica-app.png" alt="Dashboard de consumo de la aplicación - Gráficos adicionales" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+
+      <div class="report-card" style="margin-bottom:12px">
+        <p class="report-card-title">API call history</p>
+        <p>Registro tabular detallado de cada llamada individual a las APIs, incluyendo timestamp, código de estado HTTP, API, endpoint y latencia.</p>
+      </div>
+
+      <img src="assets/images/04d-analitica-app.png" alt="Dashboard de consumo de la aplicación - Historial de llamadas API" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+
+      <div class="callout callout-info" style="margin-top:16px">
+        <strong>Filtros temporales y condicionales</strong>
+        <p>Podés ajustar el rango temporal (últimas 24 horas, 7 días, 30 días o períodos personalizados) y aplicar filtros por código de estado o API para investigar incidentes puntuales o analizar tendencias de demanda.</p>
+      </div>
+
+      <img src="assets/images/04e-analitica-filtros.png" alt="Filtros de analítica en el Developer Portal" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+
+  <!-- PASO 5 -->
+  <p class="section-label" id="sec-paso5" style="margin-top:32px">Paso 5: Auditar eventos de API</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">5</div><strong>Detalle de un evento en API Call History</strong></div>
+    <div class="step-body">
+      <p>Desde la tabla de <strong>API call history</strong>, podés hacer click y expandir cualquier registro individual para inspeccionar el detalle técnico completo de esa transacción.</p>
+      <p>Al expandir un evento obtenés trazabilidad total de la petición: podés revisar los headers enviados, la respuesta del backend, el código de estado exacto y los tiempos de latencia. Esto permite a los desarrolladores diagnosticar fallas en sus integraciones de forma inmediata sin necesidad de abrir un ticket de soporte.</p>
+      <img src="assets/images/05-api-call-history.png" alt="Detalle expandido de un evento en el historial de llamadas de API" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+
+  <!-- PASO 6 -->
+  <p class="section-label" id="sec-paso6" style="margin-top:32px">Paso 6: Analítica por organización consumidora</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">6</div><strong>Analítica por organización consumidora</strong></div>
+    <div class="step-body">
+      <p>Si contás con rol de administrador en tu organización consumidora, disponés además de un panel de analítica consolidado que agrega el consumo conjunto de todas las aplicaciones asociadas a la organización.</p>
+      <p>Para acceder, hacé click en la esquina superior derecha sobre el nombre de tu organización consumidora y seleccioná <strong>My Organization</strong>:</p>
+      <img src="assets/images/06a-cOrg.png" alt="Menú de usuario seleccionando la opción My Organization" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Dentro de la sección, ingresá a la pestaña <strong>Analytics</strong>. Allí encontrarás los mismos KPIs, desgloses y reportes de volumen y errores, pero totalizando la actividad global de la organización:</p>
+      <img src="assets/images/06b-cOrg-analytics.png" alt="Dashboard de analítica a nivel de Organización Consumidora" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <div class="callout callout-info">
+        <strong>Visibilidad de gestión y capacidad</strong>
+        <p>Esta perspectiva global permite a los líderes técnicos y administradores de proyectos controlar el consumo acumulado frente a las cuotas contratadas, planificar necesidades de escalabilidad y auditar qué aplicaciones concentran el mayor tráfico de la empresa.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERIFICACIÓN -->
+  <h2 class="sec-heading" id="sec-verificacion">Verificación</h2>
+  <p style="font-size:13px;color:var(--ibm-gray-80);margin-bottom:14px">Al finalizar este laboratorio deberías poder:</p>
+  <ul class="checklist">
+    <li>Acceder al <strong>Developer Portal</strong> e iniciar sesión con tu cuenta de consumidor.</li>
+    <li>Navegar a la sección <strong>Apps</strong> y seleccionar tu aplicación consumidora.</li>
+    <li>Interpretar los KPIs y gráficos del <strong>Dashboard de consumo por aplicación</strong>: volumen de llamados, códigos de estado, top productos, top APIs, llamadas limitadas (throttled) y errores.</li>
+    <li>Analizar los reportes de <strong>tiempos de respuesta</strong> (APIs más lentas y más rápidas) y <strong>rutas más invocadas</strong>.</li>
+    <li>Aplicar <strong>filtros</strong> para acotar el rango de tiempo o condiciones específicas de búsqueda.</li>
+    <li>Expandir registros en el <strong>API call history</strong> para auditar eventos individuales de llamada.</li>
+    <li>Acceder al dashboard consolidado de analítica de la <strong>Organización Consumidora</strong> desde <strong>My Organization → Analytics</strong>.</li>
+  </ul>
+
+</main>
+
+<footer class="page-footer">
+  <span>Workshop API Connect · Banco Provincia · 2026</span>
+  <span class="footer-ibm">IBM</span>
+</footer>
+
+<button id="btn-back-top" title="Volver al inicio" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  window.addEventListener('scroll', function() {
+    document.getElementById('btn-back-top')
+      .classList.toggle('visible', window.scrollY > 400);
+  });
+</script>
+
+<!-- SCRIPT LAB SETUP -->
+<script>
+function computeUserId(setup) {
+  return ((setup.abbr || 'CECI').toLowerCase() + (setup.num || '01'));
+}
+function getStoredSetup() {
+  try {
+    const raw = localStorage.getItem('apic_lab_setup');
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { abbr: 'CECI', num: '01' };
+}
+function openLabSetupModal() {
+  const setup = getStoredSetup();
+  document.getElementById('setup-abbr').value = (setup.abbr || '').toUpperCase();
+  document.getElementById('setup-num').value = setup.num || '';
+  updateSetupPreview();
+  document.getElementById('modal-setup').classList.add('open');
+}
+function closeLabSetupModal() {
+  document.getElementById('modal-setup').classList.remove('open');
+}
+function handleBackdropClick(event) {
+  if (event.target === document.getElementById('modal-setup')) closeLabSetupModal();
+}
+function updateSetupPreview() {
+  const abbr = document.getElementById('setup-abbr').value.toLowerCase();
+  const num  = document.getElementById('setup-num').value;
+  document.getElementById('setup-preview').textContent = (abbr || 'ceci') + (num || '01');
+}
+function saveLabSetup() {
+  let abbr = document.getElementById('setup-abbr').value.toLowerCase().trim();
+  let num  = document.getElementById('setup-num').value.trim();
+  if (!abbr || abbr.length < 2) abbr = 'CECI';
+  if (!num) num = '01';
+  const setupData = { abbr: abbr, num: num };
+  try { localStorage.setItem('apic_lab_setup', JSON.stringify(setupData)); } catch (e) {}
+  applyLabSetup(setupData);
+  closeLabSetupModal();
+}
+function applyLabSetup(setup) {
+  const userId = computeUserId(setup);
+  const displayBadge = ((setup.abbr || 'CECI') + (setup.num || '01')).toUpperCase();
+
+  const navBadge = document.getElementById('nav-setup-badge');
+  if (navBadge) navBadge.textContent = displayBadge;
+
+  const calloutBadge = document.getElementById('callout-env-badge');
+  if (calloutBadge) calloutBadge.textContent = userId;
+
+  const calloutIcon = document.getElementById('callout-env-icon');
+  if (calloutIcon) calloutIcon.textContent = (setup.num || '01');
+
+  document.querySelectorAll('.dyn-val').forEach(function (el) {
+    const prefix = el.getAttribute('data-prefix') || '';
+    const suffix = el.getAttribute('data-suffix') || '';
+    el.textContent = prefix + userId + suffix;
+  });
+
+  if (typeof LAB_CONFIG !== 'undefined') {
+    const portalUrlEl = document.getElementById('portal-url-display');
+    if (portalUrlEl) {
+      if (LAB_CONFIG.portal_url) {
+        portalUrlEl.textContent = LAB_CONFIG.portal_url;
+      } else {
+        portalUrlEl.textContent = '(URL no encontrada — revisá datos-ambiente.js)';
+        portalUrlEl.style.color = '#DA1E28';
+      }
+    }
+  }
+}
+document.addEventListener('DOMContentLoaded', function () {
+  applyLabSetup(getStoredSetup());
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') closeLabSetupModal();
+});
+</script>
+
+</body>
+</html>

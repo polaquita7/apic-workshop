@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consumidores · Portal de Desarrolladores · IBM API Connect v12</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@300;400&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ibm-blue-60: #0F62FE; --ibm-blue-80: #002D9C; --ibm-navy: #001D6C;
+      --ibm-teal-50: #009D9A; --ibm-gray-10: #F4F4F4; --ibm-gray-20: #E0E0E0;
+      --ibm-gray-60: #6F6F6F; --ibm-gray-80: #393939; --ibm-white: #FFFFFF;
+      --ibm-black: #161616; --ibm-purple: #6929C4; --ibm-red: #DA1E28;
+      --ibm-green: #198038; --ibm-amber: #B4530A;
+    }
+    html { font-size: 15px; scroll-behavior: smooth; }
+    body { font-family: 'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif; font-weight: 300; color: var(--ibm-black); background: var(--ibm-gray-10); line-height: 1.55; min-height: 100vh; }
+
+    /* HERO */
+    .hero { background: var(--ibm-navy); color: var(--ibm-white); padding: 0 64px; min-height: 44vh; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--ibm-blue-60); }
+    .hero-grid { position: absolute; top: 0; right: 0; width: 45%; height: 100%; opacity: 0.04; background-image: repeating-linear-gradient(0deg,#fff 0,#fff 1px,transparent 1px,transparent 60px), repeating-linear-gradient(90deg,#fff 0,#fff 1px,transparent 1px,transparent 60px); }
+    .hero-accent { position: absolute; bottom: -120px; right: -120px; width: 380px; height: 380px; border-radius: 50%; border: 1px solid rgba(15,98,254,0.25); }
+    .hero-accent::after { content: ''; position: absolute; top: 40px; left: 40px; right: 40px; bottom: 40px; border-radius: 50%; border: 1px solid rgba(15,98,254,0.15); }
+    .hero-inner { position: relative; z-index: 2; max-width: 900px; padding: 60px 0 52px; }
+    .hero-eyebrow { font-size: 11px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+    .hero-eyebrow::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--ibm-blue-60); }
+    .hero-badges { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .hero-badge { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 2px; }
+    .hero-badge-lab { background: var(--ibm-blue-60); color: #fff; }
+    .hero-badge-bloque { background: #393939; color: #fff; }
+    .hero-title { font-size: clamp(26px, 3.5vw, 46px); font-weight: 300; line-height: 1.1; max-width: 680px; margin-bottom: 8px; }
+    .hero-title em { font-style: normal; color: var(--ibm-blue-60); }
+    .hero-tagline { font-size: 14px; font-weight: 300; color: rgba(255,255,255,0.55); margin-top: 16px; max-width: 560px; line-height: 1.65; }
+    .hero-divider { width: 48px; height: 2px; background: var(--ibm-blue-60); margin: 28px 0; }
+    .hero-meta { display: flex; gap: 40px; flex-wrap: wrap; }
+    .meta-item { display: flex; flex-direction: column; gap: 4px; }
+    .meta-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.38); font-weight: 400; }
+    .meta-value { font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.85); }
+
+    /* CONTENT */
+    .content { max-width: 900px; margin: 0 auto; padding: 56px 32px 96px; }
+
+    /* SECTION LABEL */
+    .section-label { font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ibm-gray-60); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--ibm-gray-20); }
+
+    /* NN CALLOUT */
+    .nn-callout { background: var(--ibm-navy); color: var(--ibm-white); border-radius: 2px; padding: 22px 26px; margin-bottom: 48px; display: flex; gap: 18px; align-items: flex-start; }
+    .nn-icon { flex-shrink: 0; width: 38px; height: 38px; background: var(--ibm-blue-60); border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; font-family: 'IBM Plex Mono', monospace; color: #fff; }
+    .nn-body { flex: 1; }
+    .nn-body strong { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ibm-blue-60); margin-bottom: 8px; }
+    .nn-body p { font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.65; }
+    .nn-badge { display: inline-block; background: var(--ibm-blue-60); color: #fff; font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 1px 6px; border-radius: 2px; }
+    .nn-mono { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.85); }
+
+    /* TOC */
+    .toc { background: var(--ibm-white); border: 1px solid var(--ibm-gray-20); border-left: 4px solid var(--ibm-blue-60); border-radius: 2px; padding: 22px 26px; margin-bottom: 48px; }
+    .toc-title { font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ibm-gray-60); margin-bottom: 14px; }
+    .toc ol { padding-left: 18px; }
+    .toc li { margin-bottom: 5px; font-size: 13px; color: var(--ibm-gray-80); }
+    .toc ol ol { margin-top: 4px; }
+    .toc a { color: var(--ibm-blue-60); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+
+    /* SECTION HEADING */
+    h2.sec-heading { font-size: 18px; font-weight: 400; color: var(--ibm-black); margin-top: 48px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--ibm-gray-20); }
+
+    /* STEP CARDS */
+    .step { background: var(--ibm-white); border: 1px solid var(--ibm-gray-20); border-radius: 2px; margin-bottom: 16px; overflow: hidden; }
+    .step-header { display: flex; align-items: center; gap: 14px; background: var(--ibm-gray-10); padding: 10px 18px; border-bottom: 1px solid var(--ibm-gray-20); }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--ibm-blue-60); color: #fff; font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'IBM Plex Mono', monospace; }
+    .step-header strong { font-size: 13px; font-weight: 500; color: var(--ibm-black); }
+    .step-body { padding: 16px 18px; }
+    .step-body p { font-size: 13px; color: var(--ibm-gray-80); margin-bottom: 10px; line-height: 1.6; }
+    .step-body p:last-child { margin-bottom: 0; }
+
+    /* CALLOUTS */
+    .callout { border-radius: 2px; padding: 12px 16px; margin: 12px 0; font-size: 13px; line-height: 1.6; }
+    .callout-info { background: #EDF5FF; border-left: 4px solid var(--ibm-blue-60); color: var(--ibm-gray-80); }
+    .callout-warn { background: #FFF8E1; border-left: 4px solid #F1C21B; color: var(--ibm-gray-80); }
+    .callout-ok   { background: #DEFBE6; border-left: 4px solid var(--ibm-green); color: var(--ibm-gray-80); }
+    .callout-err  { background: #FFF1F1; border-left: 4px solid var(--ibm-red); color: var(--ibm-gray-80); }
+    .callout > strong { display: block; margin-bottom: 4px; font-weight: 500; }
+
+    /* CODE */
+    code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; background: #EDF5FF; color: var(--ibm-purple); padding: 1px 5px; border-radius: 2px; border: 1px solid #D0E2FF; }
+
+    /* TABLES */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+    th { background: var(--ibm-gray-10); text-align: left; padding: 8px 12px; border: 1px solid var(--ibm-gray-20); font-weight: 500; font-size: 12px; letter-spacing: 0.04em; color: var(--ibm-gray-80); }
+    td { padding: 8px 12px; border: 1px solid var(--ibm-gray-20); vertical-align: top; font-size: 13px; color: var(--ibm-gray-80); }
+    tr:nth-child(even) td { background: #fafafa; }
+
+    /* CONCEPT BOX */
+    .concept-box { background: var(--ibm-white); border: 1px solid var(--ibm-gray-20); border-top: 3px solid var(--ibm-teal-50); border-radius: 2px; padding: 20px 24px; margin: 20px 0; }
+    .concept-box-title { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ibm-teal-50); margin-bottom: 10px; }
+    .concept-box p { font-size: 13px; color: var(--ibm-gray-80); line-height: 1.65; margin-bottom: 8px; }
+    .concept-box p:last-child { margin-bottom: 0; }
+
+    /* FEATURE LIST */
+    .feature-list { list-style: none; padding: 0; margin: 8px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .feature-list li { font-size: 13px; color: var(--ibm-gray-80); display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+    .feature-list li::before { content: '→'; color: var(--ibm-blue-60); font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+
+    /* LISTS */
+    ul.plain { list-style: disc; padding-left: 20px; margin: 8px 0; }
+    ul.plain li { margin-bottom: 5px; font-size: 13px; color: var(--ibm-gray-80); line-height: 1.55; }
+
+    /* CHECKLIST */
+    .checklist { list-style: none; padding: 0; margin: 8px 0; }
+    .checklist li { font-size: 13px; color: var(--ibm-gray-80); margin-bottom: 6px; display: flex; align-items: baseline; gap: 8px; }
+    .checklist li::before { content: '☐'; font-size: 14px; color: var(--ibm-blue-60); flex-shrink: 0; }
+
+    /* TOP NAV BAR */
+    .top-nav {
+      position: sticky; top: 0; left: 0; width: 100%; height: 48px;
+      background: var(--ibm-navy); border-bottom: 1px solid rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; z-index: 1000;
+    }
+    .top-nav-title {
+      font-size: 13px; font-weight: 400; color: #fff; display: flex; align-items: center; gap: 8px;
+    }
+    .top-nav-title strong { font-weight: 600; }
+    .top-nav-title span { color: rgba(255,255,255,0.5); }
+    .top-nav-actions { display: flex; align-items: center; gap: 12px; }
+    .btn-lab-setup {
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);
+      color: #fff; font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 500;
+      padding: 5px 12px; border-radius: 2px; cursor: pointer; display: flex; align-items: center; gap: 8px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .btn-lab-setup:hover {
+      background: rgba(255,255,255,0.2); border-color: var(--ibm-blue-60);
+    }
+    .btn-lab-setup .setup-badge {
+      background: var(--ibm-blue-60); color: #fff; font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px; padding: 1px 6px; border-radius: 2px;
+    }
+
+    /* MODAL LAB SETUP */
+    .modal-backdrop {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.65); backdrop-filter: blur(2px);
+      display: none; align-items: center; justify-content: center; z-index: 9999;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: var(--ibm-white); border-radius: 4px; box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+      width: 100%; max-width: 480px; padding: 28px; position: relative; animation: modalIn 0.2s ease-out;
+    }
+    @keyframes modalIn {
+      from { transform: translateY(-12px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-eyebrow {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ibm-blue-60); margin-bottom: 6px;
+    }
+    .modal-title {
+      font-size: 20px; font-weight: 400; color: var(--ibm-black); margin-bottom: 12px;
+    }
+    .modal-desc {
+      font-size: 13px; color: var(--ibm-gray-60); line-height: 1.5; margin-bottom: 20px;
+    }
+    .modal-close-btn {
+      position: absolute; top: 20px; right: 20px; background: transparent; border: none;
+      font-size: 18px; color: var(--ibm-gray-60); cursor: pointer; padding: 4px 8px; line-height: 1;
+    }
+    .modal-close-btn:hover { color: var(--ibm-black); }
+    .modal-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;
+    }
+    .modal-field { display: flex; flex-direction: column; gap: 6px; }
+    .modal-label {
+      font-size: 12px; font-weight: 500; color: var(--ibm-gray-80);
+    }
+    .modal-input {
+      font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500;
+      padding: 8px 12px; border: 1px solid var(--ibm-gray-20); border-radius: 2px;
+      outline: none; background: var(--ibm-gray-10); text-transform: uppercase;
+    }
+    .modal-input:focus {
+      border-color: var(--ibm-blue-60); background: #fff;
+    }
+    .modal-preview-card {
+      background: #EDF5FF; border: 1px solid #D0E2FF; border-radius: 2px;
+      padding: 12px 16px; margin-bottom: 20px;
+    }
+    .modal-preview-label {
+      font-size: 11px; font-weight: 500; text-transform: uppercase; color: var(--ibm-blue-80); margin-bottom: 4px;
+    }
+    .modal-preview-val {
+      font-family: 'IBM Plex Mono', monospace; font-size: 18px; font-weight: 600; color: var(--ibm-navy);
+    }
+    .modal-footer {
+      display: flex; justify-content: flex-end; gap: 12px;
+    }
+    .btn-secondary {
+      background: transparent; border: 1px solid var(--ibm-gray-20); color: var(--ibm-black);
+      padding: 8px 16px; font-size: 13px; font-weight: 400; border-radius: 2px; cursor: pointer;
+    }
+    .btn-secondary:hover { background: var(--ibm-gray-10); }
+    .btn-primary {
+      background: var(--ibm-blue-60); border: 1px solid var(--ibm-blue-60); color: #fff;
+      padding: 8px 20px; font-size: 13px; font-weight: 500; border-radius: 2px; cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--ibm-blue-80); }
+
+    /* BACK TO TOP */
+    #btn-back-top {
+      position: fixed; bottom: 28px; right: 28px;
+      width: 40px; height: 40px;
+      background: var(--ibm-blue-60); color: #fff;
+      border: none; border-radius: 50%;
+      font-size: 18px; line-height: 1; cursor: pointer;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 900;
+    }
+    #btn-back-top.visible { opacity: 1; pointer-events: auto; }
+    #btn-back-top:hover { background: var(--ibm-blue-80); }
+
+    /* FOOTER */
+    .page-footer { border-top: 1px solid var(--ibm-gray-20); padding: 20px 32px; max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--ibm-gray-60); }
+    .footer-ibm { font-weight: 500; letter-spacing: 0.06em; }
+
+    @media (max-width: 720px) {
+      .hero { padding: 0 28px; }
+      .hero-meta { gap: 24px; }
+      .content { padding: 40px 20px 64px; }
+      .feature-list { grid-template-columns: 1fr; }
+      .modal-grid { grid-template-columns: 1fr; }
+      .top-nav { padding: 0 16px; }
+    }
+  </style>
+  <!-- VALORES DE AMBIENTE — fuente canónica: laboratorios/datos-ambiente.js -->
+  <script src="../../datos-ambiente.js"></script>
+</head>
+<body>
+
+<!-- TOP NAV BAR -->
+<nav class="top-nav">
+  <div class="top-nav-title">
+    <strong>API Connect</strong>
+    <span>| <a href="../../Landing_Labs_APIC_BancoProvincia.html#index-consumidores" style="color:rgba(255,255,255,0.7);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Experiencia de Consumidores</a>
+    </span>
+  </div>
+  <div class="top-nav-actions">
+    <button type="button" class="btn-lab-setup" id="btn-open-setup" onclick="openLabSetupModal()">
+      <span>Lab setup</span>
+      <span class="setup-badge" id="nav-setup-badge">demo01</span>
+    </button>
+  </div>
+</nav>
+
+<!-- MODAL LAB SETUP -->
+<div class="modal-backdrop" id="modal-setup" onclick="handleBackdropClick(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button type="button" class="modal-close-btn" onclick="closeLabSetupModal()">✕</button>
+    <div class="modal-eyebrow">Personalizar este laboratorio</div>
+    <h2 class="modal-title">Lab setup</h2>
+    <p class="modal-desc">
+      Ingresá la abreviatura de 4 letras de tu nombre y el número de ambiente de 2 dígitos asignado para personalizar todos los recursos, nombres y comandos del lab.
+    </p>
+    <div class="modal-grid">
+      <div class="modal-field">
+        <label class="modal-label" for="setup-abbr">Abreviatura (4 letras)</label>
+        <input type="text" id="setup-abbr" class="modal-input" maxlength="4" placeholder="CECI" oninput="updateSetupPreview()" autocomplete="off" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="setup-num">Número de ambiente (2 dígitos)</label>
+        <input type="text" id="setup-num" class="modal-input" maxlength="2" placeholder="01" oninput="updateSetupPreview()" autocomplete="off" />
+      </div>
+    </div>
+    <div class="modal-preview-card">
+      <div class="modal-preview-label">Tu identificador de recursos (ID prefix)</div>
+      <div class="modal-preview-val" id="setup-preview">ceci01</div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" onclick="closeLabSetupModal()">Cancelar</button>
+      <button type="button" class="btn-primary" onclick="saveLabSetup()">Guardar setup</button>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-accent"></div>
+  <div class="hero-inner">
+    <p class="hero-eyebrow">IBM · Banco Provincia · 2026</p>
+    <div class="hero-badges">
+      <span class="hero-badge hero-badge-lab">Laboratorio Práctico</span>
+      <span class="hero-badge hero-badge-bloque">Experiencia Consumidores</span>
+    </div>
+    <h1 class="hero-title">Portal de Desarrolladores:<br>registro, app y <em>primera suscripción</em></h1>
+    <p class="hero-tagline">
+      Registro de cuenta en el Developer Portal, creación de una aplicación consumidora,
+      suscripción al Producto publicado y prueba de la API con credenciales reales.
+    </p>
+    <div class="hero-divider"></div>
+    <div class="hero-meta">
+      <div class="meta-item"><span class="meta-label">Plataforma</span><span class="meta-value">IBM API Connect v12 · Developer Portal</span></div>
+      <div class="meta-item"><span class="meta-label">Perspectiva</span><span class="meta-value">Consumer · Desarrollador de aplicaciones</span></div>
+      <div class="meta-item"><span class="meta-label">Prerrequisito</span><span class="meta-value">Producto publicado en Sandbox</span></div>
+      <div class="meta-item"><span class="meta-label">Duración</span><span class="meta-value">~15 min</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT -->
+<main class="content">
+
+  <!-- NN CALLOUT -->
+  <div class="nn-callout">
+    <div class="nn-icon" id="callout-env-icon">ID</div>
+    <div class="nn-body">
+      <strong>Tu identificador de laboratorio</strong>
+      <p>
+        Para evitar colisiones de nombres con los demás participantes en el ambiente APIC compartido, este lab utiliza tu identificador personalizado
+        <span class="nn-badge" id="callout-env-badge">ceci01</span> (4 letras de tu nombre + 2 dígitos de ambiente). Podés cambiarlo en cualquier momento desde el botón <button type="button" onclick="openLabSetupModal()" style="background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:2px;padding:1px 6px;cursor:pointer;font-size:11px;font-family:'IBM Plex Sans',sans-serif;">Lab setup</button> en la barra superior.
+        Necesitás una dirección de e-mail válida y accesible para activar tu cuenta en el portal.
+      </p>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <p class="toc-title">Contenido</p>
+    <ol>
+      <li><a href="#sec-concepto">¿Qué es el Portal de Desarrolladores?</a></li>
+      <li><a href="#sec-pasos">Pasos del laboratorio</a>
+        <ol style="margin-top:4px">
+          <li><a href="#sec-paso1">Paso 1: Acceder al portal</a></li>
+          <li><a href="#sec-paso2">Paso 2: Crear una cuenta en el portal</a></li>
+          <li><a href="#sec-paso3">Paso 3: Activar la cuenta y loguearse</a></li>
+          <li><a href="#sec-paso4">Paso 4: Crear una aplicación consumidora</a></li>
+          <li><a href="#sec-paso5">Paso 5: Guardar el API Secret</a></li>
+          <li><a href="#sec-paso6">Paso 6: Perspectiva del Proveedor</a></li>
+          <li><a href="#sec-paso7">Paso 7: Explorar el portal</a></li>
+          <li><a href="#sec-paso8">Paso 8: Suscribirse al Producto</a></li>
+          <li><a href="#sec-paso9">Paso 9: Probar la API con el secret</a></li>
+        </ol>
+      </li>
+      <li><a href="#sec-verificacion">Verificación</a></li>
+    </ol>
+  </div>
+
+  <!-- CONCEPTO -->
+  <h2 class="sec-heading" id="sec-concepto">¿Qué es el Portal de Desarrolladores?</h2>
+  <div class="concept-box">
+    <p class="concept-box-title">Concepto clave: Developer Portal</p>
+    <p>El <strong>Portal de Desarrolladores</strong> es el portal web que permite generar comunidad con los desarrolladores de aplicaciones.</p>
+    <ul class="feature-list" style="margin-top:10px">
+      <li>Socializar Productos y APIs</li>
+      <li>Registrar usuarios y aplicaciones consumidoras</li>
+      <li>Autogestión de suscripciones y credenciales</li>
+      <li>Revisar documentación y probar APIs</li>
+      <li>Realizar seguimiento de consumo</li>
+      <li>Compartir contenido, comunidades y foros</li>
+    </ul>
+  </div>
+
+  <!-- PASOS -->
+  <h2 class="sec-heading" id="sec-pasos">Pasos del laboratorio</h2>
+
+  <!-- PASO 1 -->
+  <p class="section-label" id="sec-paso1" style="margin-top:8px">Paso 1: Acceder al portal</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">1</div><strong>Abrir el Developer Portal en una nueva pestaña</strong></div>
+    <div class="step-body">
+      <p>Abrí una nueva pestaña del navegador y navegá a la URL del Developer Portal de tu ambiente:</p>
+      <p id="portal-url-display" style="font-family:'IBM Plex Mono',monospace;font-size:13px;background:#EDF5FF;color:#6929C4;padding:8px 12px;border-radius:2px;border:1px solid #D0E2FF;margin:10px 0;word-break:break-all;"></p>
+      <script>
+        (function(){
+          var el = document.getElementById('portal-url-display');
+          if(typeof LAB_CONFIG !== 'undefined' && LAB_CONFIG.portal_url){
+            el.textContent = LAB_CONFIG.portal_url;
+          } else {
+            el.textContent = '(URL no encontrada — revisá datos-ambiente.js)';
+            el.style.color = '#DA1E28';
+          }
+        })();
+      </script>
+      <img src="assets/images/lab5-3.png" alt="Página principal del Developer Portal" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <details style="margin-top:12px">
+        <summary style="font-size:12px;color:var(--ibm-gray-60);cursor:pointer;user-select:none">¿No tenés la URL? Podés encontrarla en el API Manager</summary>
+        <div style="margin-top:10px">
+          <p style="font-size:13px;color:var(--ibm-gray-80)">En el <strong>API Manager</strong>, navegá a <strong>Manage → Sandbox → Catalog settings → Portal</strong>. Copiá la <strong>Portal endpoint URL</strong> que aparece ahí.</p>
+          <img src="assets/images/lab5-2.png" alt="Catalog settings del Sandbox mostrando la Portal endpoint URL resaltada" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:10px 0;display:block;" />
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- PASO 2 -->
+  <p class="section-label" id="sec-paso2" style="margin-top:32px">Paso 2: Crear una cuenta en el portal</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">2</div><strong>Hacer click en "Crear cuenta"</strong></div>
+    <div class="step-body">
+      <p>En la página principal del Developer Portal, hacé click en el botón <strong>Crear cuenta</strong> (arriba a la derecha).</p>
+      <img src="assets/images/lab5-3.png" alt="Página principal del Developer Portal con el botón Crear cuenta resaltado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <div class="callout callout-warn">
+        <strong>User Registries separadas</strong>
+        <p style="margin:4px 0 0">Las <strong>User Registries</strong> del API Manager y del Developer Portal son <strong>independientes</strong>. Tu usuario de APIM no sirve para loguearte en el portal. Tenés que crear una cuenta nueva específicamente para el portal.</p>
+      </div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">3</div><strong>Completar el formulario de registro</strong></div>
+    <div class="step-body">
+      <p>Completá el formulario con tu información. Usá una <strong>dirección de e-mail válida</strong> a la que tengas acceso, ya que vas a recibir un correo de activación.</p>
+      <div class="callout callout-warn">
+        <strong>Recordá tu contraseña</strong>
+        <p style="margin:4px 0 0">La vas a necesitar más adelante en este mismo laboratorio para loguearte y usar el portal.</p>
+      </div>
+      <p>Al confirmar el formulario, aparecerá un mensaje de confirmación indicando que se envió el e-mail de activación.</p>
+      <img src="assets/images/lab5-4.png" alt="Mensaje de confirmación: solicitud de registro recibida, se envió e-mail de activación" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+
+  <!-- PASO 3 -->
+  <p class="section-label" id="sec-paso3" style="margin-top:32px">Paso 3: Activar la cuenta y loguearse</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">4</div><strong>Activar la cuenta desde el e-mail</strong></div>
+    <div class="step-body">
+      <p>Revisá tu casilla de correo. Vas a recibir un mensaje del portal con el asunto <strong>Registro de cuenta de portal de desarrollador Sandbox</strong>. Hacé click en el enlace de activación que contiene el mail.</p>
+      <img src="assets/images/lab5-5.png" alt="E-mail de activación de cuenta del Developer Portal con el link de activación" style="max-width:50%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Al activar la cuenta, el portal te confirmará que podés iniciar sesión.</p>
+      <img src="assets/images/lab5-6.png" alt="Mensaje del portal: Su cuenta se ha activado. Ahora puede Iniciar sesión." style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+
+  <!-- PASO 4 -->
+  <p class="section-label" id="sec-paso4" style="margin-top:32px">Paso 4: Crear una aplicación consumidora</p>
+  <div class="callout callout-info" style="margin-bottom:16px">
+    <strong>Usuarios vs. Aplicaciones</strong>
+    <p style="margin:4px 0 0">El registro al portal es a nivel <strong>usuario</strong>: cada persona crea su propia cuenta. Pero la <strong>suscripción a un Producto es a nivel aplicación</strong>: las credenciales (API Key y Secret) se generan para la app, no para el usuario. Esto permite que una misma persona tenga múltiples apps con distintas suscripciones y credenciales. Al mismo tiempo, multiples desarrolladores pueden estar trabajando con la misma aplicación; pues pueden pertenecer a la misma organización consumidora</p>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">5</div><strong>Iniciar la creación de la app desde la pantalla de bienvenida</strong></div>
+    <div class="step-body">
+      <p>Después de loguearte, el portal te dará la bienvenida con dos opciones. Hacé click en <strong>Create a new App</strong>.</p>
+      <img src="assets/images/lab5-7.png" alt="Pantalla de bienvenida del portal con la opción Create a new App resaltada" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">6</div><strong>Completar el formulario de la nueva aplicación</strong></div>
+    <div class="step-body">
+      <p>En el formulario <strong>Create a new application</strong>, completá el campo <strong>Title</strong> con el nombre de tu app:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Title</td><td><code class="dyn-val" data-prefix="app-">app-ceci01</code></td></tr>
+        <tr><td>Description</td><td>dejar vacío</td></tr>
+      </table>
+      <p>Escribí el nombre y hacé click en <strong>Save</strong>.</p>
+      <img src="assets/images/lab5-9.png" alt="Formulario con app-nn completado y el botón Save resaltado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+
+  <!-- PASO 5 -->
+  <p class="section-label" id="sec-paso5" style="margin-top:32px">Paso 5: Guardar el API Secret</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">7</div><strong>Copiar y guardar las credenciales de la aplicación</strong></div>
+    <div class="step-body">
+      <p>Al crear la aplicación, el portal muestra el <strong>API Key</strong> y el <strong>API Secret</strong>. <strong>Guardá el Secret ahora</strong>, solo se muestra una vez.</p>
+      <img src="assets/images/lab5-10.png" alt="New application credentials mostrando Key y Secret con botones de copia resaltados" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <div class="callout callout-warn">
+        <strong>Guardá el Secret antes de cerrar</strong>
+        <p style="margin:4px 0 0">El Secret solo se muestra en este momento. Copialo y guardalo, lo vas a necesitar en el Paso 9. Si lo perdés, podés regenerar las credenciales desde el detalle de tu app (la API Key también cambiará).</p>
+      </div>
+      <p>Hacé click en <strong>OK</strong> para continuar.</p>
+    </div>
+  </div>
+
+  <!-- PASO 6 -->
+  <p class="section-label" id="sec-paso6" style="margin-top:32px">Paso 6: Perspectiva del Proveedor</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">8</div><strong>Verificar la app en la solapa Applications del catálogo</strong></div>
+    <div class="step-body">
+      <p>Volvé al <strong>API Manager</strong> y navegá a <strong>Manage → Sandbox → Applications</strong>. El proveedor de APIs usa esta vista para administrar todas las aplicaciones de los consumidores. Vas a ver tu aplicación <code class="dyn-val" data-prefix="app-">app-ceci01</code> listada junto con las de los otros participantes del lab. Si tuvieramos habilitado un proceso de aprobación de suscripciones, se haría desde la solapa <strong>Tasks</strong>.</p>
+      <img src="assets/images/lab5-14.png" alt="Solapa Applications del catálogo Sandbox mostrando app-nn y otras aplicaciones" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">9</div><strong>Verificar la solapa Consumers y Subscriptions</strong></div>
+    <div class="step-body">
+      <p>Revisá la solapa <strong>Consumers</strong> para ver tu organización de consumidor registrada. Luego revisá la solapa <strong>Subscriptions</strong>: en este momento debería aparecer vacía porque todavía no nos suscribimos a ningún Producto.</p>
+      <img src="assets/images/lab5-13.png" alt="Solapa Consumers del catálogo Sandbox mostrando las organizaciones registradas" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <img src="assets/images/lab5-15.png" alt="Solapa Subscriptions del catálogo Sandbox vacía, No recent items found" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+
+  <!-- PASO 7 -->
+  <p class="section-label" id="sec-paso7" style="margin-top:32px">Paso 7: Explorar el portal</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">10</div><strong>Explorar la solapa Apps del portal</strong></div>
+    <div class="step-body">
+      <p>Volvé al <strong>Developer Portal</strong>. Hacé click en <strong>Apps</strong> en el menú superior para ver tu aplicación <code class="dyn-val" data-prefix="app-">app-ceci01</code>.</p>
+      <img src="assets/images/lab5-25.png" alt="Menú superior del portal con la solapa Apps resaltada" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Si hacés click en <code class="dyn-val" data-prefix="app-">app-ceci01</code> y luego en la solapa <strong>Subscriptions</strong>, vas a ver que por el momento no tiene suscripciones activas.</p>
+      <img src="assets/images/lab5-11.png" alt="Detalle de app-nn con la solapa Subscriptions mostrando No subscriptions found" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">11</div><strong>Navegar a API Products en el portal</strong></div>
+    <div class="step-body">
+      <p>Hacé click en <strong>API Products</strong> en el menú superior. Vas a ver el Producto <code class="dyn-val" data-prefix="product-">product-ceci01</code> que publicamos en el lab anterior. Podés pasar el mouse sobre la tarjeta para ver las APIs que incluye.</p>
+      <img src="assets/images/lab5-19.png" alt="API Products del portal mostrando product-nn con tooltip de catalog-nn al hacer hover" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+
+  <!-- PASO 8 -->
+  <p class="section-label" id="sec-paso8" style="margin-top:32px">Paso 8: Suscribirse al Producto</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">12</div><strong>Abrir el Producto y hacer click en Select</strong></div>
+    <div class="step-body">
+      <p>Hacé click sobre <code class="dyn-val" data-prefix="product-">product-ceci01</code> en API Products. Se abre la página de detalle del Producto mostrando las <strong>APIs</strong> incluidas (<code class="dyn-val" data-prefix="catalog-">catalog-ceci01</code>) y los <strong>Plans</strong> disponibles. Hacé click en <strong>Select</strong> en el plan <code class="dyn-val" data-prefix="plan-">plan-ceci01</code> para iniciar el proceso de suscripción.</p>
+      <img src="assets/images/lab5-20.png" alt="Detalle de product-nn mostrando la API catalog-nn y el plan plan-nn con botón Select" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <div class="callout callout-info">
+        <strong>Plan de suscripción</strong>
+        <p style="margin:4px 0 0">Al suscribirte, elegís el Plan del Producto. El Plan define los límites de uso (rate limits, cuotas) que se aplicarán a las llamadas que tu aplicación haga a las APIs incluidas en ese Producto.</p>
+      </div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">13</div><strong>Wizard Subscribe, paso 1: seleccionar la aplicación</strong></div>
+    <div class="step-body">
+      <p>Se abre el wizard <strong>Subscribe to <code class="dyn-val" data-prefix="product-">product-ceci01</code> 1.0</strong>. Seleccioná tu aplicación <code class="dyn-val" data-prefix="app-">app-ceci01</code> y hacé click en <strong>Next</strong>.</p>
+      <img src="assets/images/lab5-21.png" alt="Wizard Subscribe, paso 1: seleccionar app-nn" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">14</div><strong>Wizard Subscribe, paso 2: confirmar suscripción</strong></div>
+    <div class="step-body">
+      <p>El paso <strong>Confirm Subscription</strong> muestra el resumen: Producto <code class="dyn-val" data-prefix="product-">product-ceci01</code>, aplicación <code class="dyn-val" data-prefix="app-">app-ceci01</code> y plan <code class="dyn-val" data-prefix="plan-" >plan-ceci01</code>. Hacé click en <strong>Next</strong>.</p>
+      <img src="assets/images/lab5-22.png" alt="Wizard Subscribe, paso 2: Confirm Subscription con resumen y botón Next" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">15</div><strong>Suscripción completada</strong></div>
+    <div class="step-body">
+      <p>El paso <strong>Subscription Complete</strong> confirma que tu aplicación está suscripta al plan. Hacé click en <strong>Done</strong>.</p>
+      <img src="assets/images/lab5-23.png" alt="Wizard Subscribe, paso 3: Subscription Complete con product-nn, app-nn y plan-nn" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Si volvés a la solapa <strong>Subscriptions</strong> de tu aplicación <code class="dyn-val" data-prefix="app-">app-ceci01</code>, ahora vas a ver la suscripción activa a <code class="dyn-val" data-prefix="product-">product-ceci01</code> con el plan <code class="dyn-val" data-prefix="plan-">plan-ceci01</code>, junto con las credenciales (API Key) de la app.</p>
+      <img src="assets/images/lab5-26.png" alt="Solapa Subscriptions de app-nn mostrando product-nn suscripto, plan-nn y las credenciales API Key" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+
+  <!-- PASO 9 -->
+  <p class="section-label" id="sec-paso9" style="margin-top:32px">Paso 9: Probar la API desde el portal</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">16</div><strong>Navegar a la API <span class="dyn-val" data-prefix="catalog-">catalog-ceci01</span> y revisar su documentación</strong></div>
+    <div class="step-body">
+      <p>Volvé a <strong>API Products → <span class="dyn-val" data-prefix="product-">product-ceci01</span></strong>. Hacé click sobre la tarjeta de <code class="dyn-val" data-prefix="catalog-">catalog-ceci01</code> para ver su documentación. Verás el endpoint, el protocolo y los métodos disponibles. En el panel izquierdo aparece el método <strong>GET /<span class="dyn-val" data-prefix="catalog-">catalog-ceci01</span></strong>.</p>
+      <img src="assets/images/lab5-27.png" alt="Detalle de product-nn con hover en catalog-nn mostrando los métodos GET disponibles" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <img src="assets/images/lab5-28.png" alt="Documentación de catalog-nn mostrando Overview con endpoint, tipo REST OAS3 y pestaña Try it resaltada" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">17</div><strong>Usar Try it para enviar la petición</strong></div>
+    <div class="step-body">
+      <p>Hacé click en la pestaña <strong>Try it</strong>. Se muestra el método <strong>GET /<span class="dyn-val" data-prefix="catalog-">catalog-ceci01</span></strong> con su URL completa. Hacé click en <strong>Send</strong>.</p>
+      <img src="assets/images/lab5-29.png" alt="Pestaña Try it del método GET /catalog-nn con el botón Send resaltado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Si todo está correcto, vas a recibir una respuesta <strong>200 OK</strong> con el JSON del CatalogManager.</p>
+      <img src="assets/images/lab5-31.png" alt="Respuesta 200 OK con el body JSON del CatalogManager mostrando ítems del catálogo" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <div class="callout callout-ok">
+        <strong>¡API probada con éxito!</strong>
+        <p style="margin:4px 0 0">Recibiste una respuesta <strong>200 OK</strong> con los datos del backend. El flujo completo está funcionando: portal, suscripción, credenciales y llamada a la API a través del gateway.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERIFICACIÓN -->
+  <h2 class="sec-heading" id="sec-verificacion">Verificación</h2>
+  <p style="font-size:13px;color:var(--ibm-gray-80);margin-bottom:14px">Al finalizar este laboratorio deberías poder:</p>
+  <ul class="checklist">
+    <li>Crear una <strong>cuenta de consumidor</strong> en el Developer Portal (distinta de la del API Manager).</li>
+    <li>Crear una <strong>aplicación consumidora</strong> con sus credenciales (API Key y Secret).</li>
+    <li>Verificar desde el <strong>API Manager</strong> que la app y el consumidor aparecen en el catálogo.</li>
+    <li>Explorar el catálogo de <strong>API Products</strong> en el portal: buscar, filtrar y revisar APIs y planes.</li>
+    <li><strong>Suscribir</strong> la aplicación a un Producto publicado.</li>
+    <li>Probar la API desde el portal usando el <strong>API Secret</strong> de la aplicación y recibir una respuesta válida.</li>
+  </ul>
+
+</main>
+
+<footer class="page-footer">
+  <span>Workshop API Connect · Banco Provincia · 2026</span>
+  <span class="footer-ibm">IBM</span>
+</footer>
+
+<button id="btn-back-top" title="Volver al inicio" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  window.addEventListener('scroll', function() {
+    document.getElementById('btn-back-top')
+      .classList.toggle('visible', window.scrollY > 400);
+  });
+</script>
+
+<!-- SCRIPT LAB SETUP -->
+<script>
+function computeUserId(setup) {
+  return ((setup.abbr || 'CECI').toLowerCase() + (setup.num || '01'));
+}
+function getStoredSetup() {
+  try {
+    const raw = localStorage.getItem('apic_lab_setup');
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return { abbr: 'CECI', num: '01' };
+}
+function openLabSetupModal() {
+  const setup = getStoredSetup();
+  document.getElementById('setup-abbr').value = (setup.abbr || '').toUpperCase();
+  document.getElementById('setup-num').value = setup.num || '';
+  updateSetupPreview();
+  document.getElementById('modal-setup').classList.add('open');
+}
+function closeLabSetupModal() {
+  document.getElementById('modal-setup').classList.remove('open');
+}
+function handleBackdropClick(event) {
+  if (event.target === document.getElementById('modal-setup')) closeLabSetupModal();
+}
+function updateSetupPreview() {
+  const abbr = document.getElementById('setup-abbr').value.toLowerCase();
+  const num  = document.getElementById('setup-num').value;
+  document.getElementById('setup-preview').textContent = (abbr || 'ceci') + (num || '01');
+}
+function saveLabSetup() {
+  let abbr = document.getElementById('setup-abbr').value.toLowerCase().trim();
+  let num  = document.getElementById('setup-num').value.trim();
+  if (!abbr || abbr.length < 2) abbr = 'CECI';
+  if (!num) num = '01';
+  const setupData = { abbr: abbr, num: num };
+  try { localStorage.setItem('apic_lab_setup', JSON.stringify(setupData)); } catch (e) {}
+  applyLabSetup(setupData);
+  closeLabSetupModal();
+}
+function applyLabSetup(setup) {
+  const userId = computeUserId(setup);
+  const displayBadge = ((setup.abbr || 'CECI') + (setup.num || '01')).toUpperCase();
+
+  const navBadge = document.getElementById('nav-setup-badge');
+  if (navBadge) navBadge.textContent = displayBadge;
+
+  const calloutBadge = document.getElementById('callout-env-badge');
+  if (calloutBadge) calloutBadge.textContent = userId;
+
+  const calloutIcon = document.getElementById('callout-env-icon');
+  if (calloutIcon) calloutIcon.textContent = (setup.num || '01');
+
+  document.querySelectorAll('.dyn-val').forEach(function (el) {
+    const prefix = el.getAttribute('data-prefix') || '';
+    const suffix = el.getAttribute('data-suffix') || '';
+    el.textContent = prefix + userId + suffix;
+  });
+}
+document.addEventListener('DOMContentLoaded', function () {
+  applyLabSetup(getStoredSetup());
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') closeLabSetupModal();
+});
+</script>
+
+</body>
+</html>

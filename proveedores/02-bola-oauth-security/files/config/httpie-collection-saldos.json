@@ -1,0 +1,193 @@
+{
+  "meta": {
+    "format": "httpie",
+    "version": "1.0.0",
+    "contentType": "collection",
+    "schema": "https://schema.httpie.io/1.0.0.json",
+    "docs": "https://httpie.io/r/help/export-from-httpie",
+    "source": "HTTPie Desktop 2025.2.0"
+  },
+  "entry": {
+    "name": "Saldos",
+    "icon": {
+      "color": "green",
+      "name": "lock"
+    },
+    "auth": {
+      "type": "none"
+    },
+    "requests": [
+      {
+        "name": "saldos-token",
+        "url": "<TOKEN_URL>/oauth2/token",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/x-www-form-urlencoded",
+            "enabled": true
+          }
+        ],
+        "queryParams": [
+          {
+            "name": "scope",
+            "value": "saldos:read",
+            "enabled": false
+          },
+          {
+            "name": "grant_type",
+            "value": "password",
+            "enabled": false
+          }
+        ],
+        "pathParams": [],
+        "auth": {
+          "type": "none"
+        },
+        "body": {
+          "type": "form",
+          "file": {
+            "name": ""
+          },
+          "text": {
+            "value": "{\n  \"grant_type\":\"password\",\n  \"client_id\":\"790161bffa015da5c61c4f5d9a2af5de\",\n  \"client_secret\":\"e0ae86253107e886bf3aa90884639586\",\n  \"scope\":\"saldos:read\"\n}",
+            "format": "application/json"
+          },
+          "form": {
+            "isMultipart": false,
+            "fields": [
+              {
+                "name": "grant_type",
+                "value": "password",
+                "enabled": true,
+                "type": "text"
+              },
+              {
+                "name": "client_id",
+                "value": "",
+                "enabled": true,
+                "type": "text"
+              },
+              {
+                "name": "client_secret",
+                "value": "",
+                "enabled": true,
+                "type": "text"
+              },
+              {
+                "name": "scope",
+                "value": "saldos:read",
+                "enabled": true,
+                "type": "text"
+              },
+              {
+                "name": "username",
+                "value": "",
+                "enabled": true,
+                "type": "text"
+              },
+              {
+                "name": "password",
+                "value": "",
+                "enabled": true,
+                "type": "text"
+              }
+            ]
+          },
+          "graphql": {
+            "query": "",
+            "variables": ""
+          }
+        }
+      },
+      {
+        "name": "saldos-apic",
+        "url": "<SALDOS-NN-URL>/30716595540/obtenersaldo",
+        "method": "GET",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/x-www-form-urlencoded",
+            "enabled": false
+          }
+        ],
+        "queryParams": [
+          {
+            "name": "scope",
+            "value": "saldos:read",
+            "enabled": false
+          },
+          {
+            "name": "grant_type",
+            "value": "password",
+            "enabled": false
+          }
+        ],
+        "pathParams": [],
+        "auth": {
+          "type": "bearer",
+          "credentials": {
+            "username": "",
+            "password": ""
+          },
+          "target": "headers"
+        },
+        "body": {
+          "type": "none",
+          "file": {
+            "name": ""
+          },
+          "text": {
+            "value": "{\n  \"grant_type\":\"password\",\n  \"client_id\":\"790161bffa015da5c61c4f5d9a2af5de\",\n  \"client_secret\":\"e0ae86253107e886bf3aa90884639586\",\n  \"scope\":\"saldos:read\"\n}",
+            "format": "application/json"
+          },
+          "form": {
+            "isMultipart": false,
+            "fields": [
+              {
+                "name": "grant_type",
+                "value": "password",
+                "enabled": true,
+                "type": "text"
+              },
+              {
+                "name": "client_id",
+                "value": "790161bffa015da5c61c4f5d9a2af5de",
+                "enabled": true,
+                "type": "text"
+              },
+              {
+                "name": "client_secret",
+                "value": "e0ae86253107e886bf3aa90884639586",
+                "enabled": true,
+                "type": "text"
+              },
+              {
+                "name": "scope",
+                "value": "saldos:read",
+                "enabled": true,
+                "type": "text"
+              },
+              {
+                "name": "username",
+                "value": "empresa_a",
+                "enabled": true,
+                "type": "text"
+              },
+              {
+                "name": "password",
+                "value": "pass123",
+                "enabled": true,
+                "type": "text"
+              }
+            ]
+          },
+          "graphql": {
+            "query": "",
+            "variables": ""
+          }
+        }
+      }
+    ]
+  }
+}

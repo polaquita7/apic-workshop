@@ -1,0 +1,13 @@
+kind: API
+apiVersion: api.ibm.com/v1
+metadata:
+  name: saldos
+  version: 1.0.0
+  namespace: saldos
+  tags: []
+  type: REST
+spec:
+  api-spec:
+    $path: ./saldos-spec.yml
+  policy-sequence:
+    - $ref: saldos:saldos-assembly:1.0

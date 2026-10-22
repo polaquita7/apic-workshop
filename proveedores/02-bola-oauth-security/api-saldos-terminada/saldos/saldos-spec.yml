@@ -1,0 +1,76 @@
+openapi: 3.0.4
+info:
+  title: saldos
+  version: 1.0.0
+  description: API de consulta de saldos
+  contact:
+    name: Ceci Bel
+    url: https://www.ibm.com
+    email: belcecilia@ar.ibm.com
+paths:
+  /saldos/{cuit}/obtenersaldo:
+    summary: ''
+    description: ''
+    get:
+      responses:
+        '200':
+          description: Saldo de la cuenta
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cuit:
+                    type: string
+                  titular:
+                    type: string
+                  saldo:
+                    type: number
+                  moneda:
+                    type: string
+              example:
+                cuit: 30-12345678-9
+                titular: Empresa ACME
+                saldo: 125000.5
+                moneda: ARS
+        '401':
+          description: Token no provisto o invalido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '403':
+          description: Acceso denegado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    parameters:
+      - name: cuit
+        in: path
+        description: CUIT de la empresa titular de la cuenta
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+            example: 30-71659554-9
+components:
+  securitySchemes:
+    saldos-oauth:
+      type: oauth2
+      x-ibm-oauth-provider: bapro-oauth
+      flows:
+        password:
+          scopes:
+            saldos:read: Permite consultar el saldo de la cuenta propia
+          tokenUrl: https://$(catalog.url)/bapro-oauth/oauth2/token
+security:
+  - saldos-oauth:
+      - saldos:read

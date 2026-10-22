@@ -1,0 +1,12 @@
+kind: Product
+apiVersion: api.ibm.com/v1
+metadata:
+  name: saldos-1
+  namespace: saldos
+  version: '1.0'
+  tags: []
+spec:
+  apis:
+    - $ref: saldos:saldos:1.0.0
+  plans:
+    - $ref: saldos:base:1.0

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proveedores · Analítica · IBM API Connect v12</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@300;400&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ibm-blue-60: #0F62FE; --ibm-blue-80: #002D9C; --ibm-navy: #001D6C;
+      --ibm-teal-50: #009D9A; --ibm-gray-10: #F4F4F4; --ibm-gray-20: #E0E0E0;
+      --ibm-gray-60: #6F6F6F; --ibm-gray-80: #393939; --ibm-white: #FFFFFF;
+      --ibm-black: #161616; --ibm-purple: #6929C4; --ibm-red: #DA1E28;
+      --ibm-green: #198038; --ibm-amber: #B4530A;
+    }
+    html { font-size: 15px; scroll-behavior: smooth; }
+    body { font-family: 'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif; font-weight: 300; color: var(--ibm-black); background: var(--ibm-gray-10); line-height: 1.55; min-height: 100vh; }
+
+    /* HERO */
+    .hero { background: var(--ibm-navy); color: var(--ibm-white); padding: 0 64px; min-height: 44vh; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--ibm-blue-60); }
+    .hero-grid { position: absolute; top: 0; right: 0; width: 45%; height: 100%; opacity: 0.04; background-image: repeating-linear-gradient(0deg,#fff 0,#fff 1px,transparent 1px,transparent 60px), repeating-linear-gradient(90deg,#fff 0,#fff 1px,transparent 1px,transparent 60px); }
+    .hero-accent { position: absolute; bottom: -120px; right: -120px; width: 380px; height: 380px; border-radius: 50%; border: 1px solid rgba(15,98,254,0.25); }
+    .hero-accent::after { content: ''; position: absolute; top: 40px; left: 40px; right: 40px; bottom: 40px; border-radius: 50%; border: 1px solid rgba(15,98,254,0.15); }
+    .hero-inner { position: relative; z-index: 2; max-width: 900px; padding: 60px 0 52px; }
+    .hero-eyebrow { font-size: 11px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+    .hero-eyebrow::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--ibm-blue-60); }
+    .hero-badges { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .hero-badge { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 2px; }
+    .hero-badge-lab { background: var(--ibm-blue-60); color: #fff; }
+    .hero-badge-bloque { background: #393939; color: #fff; }
+    .hero-title { font-size: clamp(26px, 3.5vw, 46px); font-weight: 300; line-height: 1.1; max-width: 680px; margin-bottom: 8px; }
+    .hero-title em { font-style: normal; color: var(--ibm-blue-60); }
+    .hero-tagline { font-size: 14px; font-weight: 300; color: rgba(255,255,255,0.55); margin-top: 16px; max-width: 560px; line-height: 1.65; }
+    .hero-divider { width: 48px; height: 2px; background: var(--ibm-blue-60); margin: 28px 0; }
+    .hero-meta { display: flex; gap: 40px; flex-wrap: wrap; }
+    .meta-item { display: flex; flex-direction: column; gap: 4px; }
+    .meta-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.38); font-weight: 400; }
+    .meta-value { font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.85); }
+
+    /* CONTENT */
+    .content { max-width: 900px; margin: 0 auto; padding: 56px 32px 96px; }
+
+    /* SECTION LABEL */
+    .section-label { font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ibm-gray-60); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--ibm-gray-20); }
+
+    /* TOC */
+    .toc { background: var(--ibm-white); border: 1px solid var(--ibm-gray-20); border-left: 4px solid var(--ibm-blue-60); border-radius: 2px; padding: 22px 26px; margin-bottom: 48px; }
+    .toc-title { font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ibm-gray-60); margin-bottom: 14px; }
+    .toc ol { padding-left: 18px; }
+    .toc li { margin-bottom: 5px; font-size: 13px; color: var(--ibm-gray-80); }
+    .toc ol ol { margin-top: 4px; }
+    .toc a { color: var(--ibm-blue-60); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+
+    /* SECTION HEADING */
+    h2.sec-heading { font-size: 18px; font-weight: 400; color: var(--ibm-black); margin-top: 48px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--ibm-gray-20); }
+
+    /* STEP CARDS */
+    .step { background: var(--ibm-white); border: 1px solid var(--ibm-gray-20); border-radius: 2px; margin-bottom: 16px; overflow: hidden; }
+    .step-header { display: flex; align-items: center; gap: 14px; background: var(--ibm-gray-10); padding: 10px 18px; border-bottom: 1px solid var(--ibm-gray-20); }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--ibm-blue-60); color: #fff; font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'IBM Plex Mono', monospace; }
+    .step-header strong { font-size: 13px; font-weight: 500; color: var(--ibm-black); }
+    .step-body { padding: 16px 18px; }
+    .step-body p { font-size: 13px; color: var(--ibm-gray-80); margin-bottom: 10px; line-height: 1.6; }
+    .step-body p:last-child { margin-bottom: 0; }
+
+    /* CALLOUTS */
+    .callout { border-radius: 2px; padding: 12px 16px; margin: 12px 0; font-size: 13px; line-height: 1.6; }
+    .callout-info { background: #EDF5FF; border-left: 4px solid var(--ibm-blue-60); color: var(--ibm-gray-80); }
+    .callout-warn { background: #FFF8E1; border-left: 4px solid #F1C21B; color: var(--ibm-gray-80); }
+    .callout-ok   { background: #DEFBE6; border-left: 4px solid var(--ibm-green); color: var(--ibm-gray-80); }
+    .callout > strong { display: block; margin-bottom: 4px; font-weight: 500; }
+
+    /* CODE */
+    code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; background: #EDF5FF; color: var(--ibm-purple); padding: 1px 5px; border-radius: 2px; border: 1px solid #D0E2FF; }
+
+    /* TABLES */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+    th { background: var(--ibm-gray-10); text-align: left; padding: 8px 12px; border: 1px solid var(--ibm-gray-20); font-weight: 500; font-size: 12px; letter-spacing: 0.04em; color: var(--ibm-gray-80); }
+    td { padding: 8px 12px; border: 1px solid var(--ibm-gray-20); vertical-align: top; font-size: 13px; color: var(--ibm-gray-80); }
+    tr:nth-child(even) td { background: #fafafa; }
+
+    /* CONCEPT BOX */
+    .concept-box { background: var(--ibm-white); border: 1px solid var(--ibm-gray-20); border-top: 3px solid var(--ibm-teal-50); border-radius: 2px; padding: 20px 24px; margin: 20px 0; }
+    .concept-box-title { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ibm-teal-50); margin-bottom: 10px; }
+    .concept-box p { font-size: 13px; color: var(--ibm-gray-80); line-height: 1.65; margin-bottom: 8px; }
+    .concept-box p:last-child { margin-bottom: 0; }
+
+    /* REPORT GRID */
+    .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 0; }
+    .report-card { background: var(--ibm-white); border: 1px solid var(--ibm-gray-20); border-radius: 2px; padding: 14px 16px; }
+    .report-card-title { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ibm-blue-60); margin-bottom: 6px; }
+    .report-card p { font-size: 12px; color: var(--ibm-gray-60); line-height: 1.55; }
+
+    /* KPI STRIP */
+    .kpi-strip { display: flex; gap: 12px; margin: 12px 0; flex-wrap: wrap; }
+    .kpi { background: var(--ibm-white); border: 1px solid var(--ibm-gray-20); border-radius: 2px; padding: 12px 18px; min-width: 120px; }
+    .kpi-label { font-size: 11px; color: var(--ibm-gray-60); margin-bottom: 4px; }
+    .kpi-value { font-size: 22px; font-weight: 300; color: var(--ibm-black); font-family: 'IBM Plex Mono', monospace; }
+    .kpi-value.ok { color: var(--ibm-green); }
+    .kpi-value.err { color: var(--ibm-red); }
+
+    /* CHECKLIST */
+    .checklist { list-style: none; padding: 0; margin: 8px 0; }
+    .checklist li { font-size: 13px; color: var(--ibm-gray-80); margin-bottom: 6px; display: flex; align-items: baseline; gap: 8px; }
+    .checklist li::before { content: '☐'; font-size: 14px; color: var(--ibm-blue-60); flex-shrink: 0; }
+
+    /* TOP NAV BAR */
+    .top-nav {
+      position: sticky; top: 0; left: 0; width: 100%; height: 48px;
+      background: var(--ibm-navy); border-bottom: 1px solid rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; z-index: 1000;
+    }
+    .top-nav-title {
+      font-size: 13px; font-weight: 400; color: #fff; display: flex; align-items: center; gap: 8px;
+    }
+    .top-nav-title strong { font-weight: 600; }
+    .top-nav-title span { color: rgba(255,255,255,0.5); }
+    .top-nav-actions { display: flex; align-items: center; gap: 12px; }
+
+    /* BACK TO TOP */
+    #btn-back-top {
+      position: fixed; bottom: 28px; right: 28px;
+      width: 40px; height: 40px;
+      background: var(--ibm-blue-60); color: #fff;
+      border: none; border-radius: 50%;
+      font-size: 18px; line-height: 1; cursor: pointer;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 900;
+    }
+    #btn-back-top.visible { opacity: 1; pointer-events: auto; }
+    #btn-back-top:hover { background: var(--ibm-blue-80); }
+
+    /* FOOTER */
+    .page-footer { border-top: 1px solid var(--ibm-gray-20); padding: 20px 32px; max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--ibm-gray-60); }
+    .footer-ibm { font-weight: 500; letter-spacing: 0.06em; }
+
+    @media (max-width: 720px) {
+      .hero { padding: 0 28px; }
+      .hero-meta { gap: 24px; }
+      .content { padding: 40px 20px 64px; }
+      .report-grid { grid-template-columns: 1fr; }
+      .kpi-strip { gap: 8px; }
+      .top-nav { padding: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP NAV BAR -->
+<nav class="top-nav">
+  <div class="top-nav-title">
+    <strong>API Connect</strong>
+    <span>| <a href="../../Landing_Labs_APIC_BancoProvincia.html#index-proveedores" style="color:rgba(255,255,255,0.7);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Experiencia de Proveedores</a>
+    </span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-accent"></div>
+  <div class="hero-inner">
+    <p class="hero-eyebrow">IBM · Banco Provincia · 2026</p>
+    <div class="hero-badges">
+      <span class="hero-badge hero-badge-lab">Laboratorio Práctico</span>
+      <span class="hero-badge hero-badge-bloque">Experiencia Proveedores</span>
+    </div>
+    <h1 class="hero-title">Analítica de APIs:<br><em>visibilidad del consumo</em> en tiempo real</h1>
+    <p class="hero-tagline">
+      Exploración de los informes y paneles de analítica integrados en APIC: volumen de llamadas,
+      códigos de respuesta, tendencias de consumidores y detección de organizaciones inactivas.
+    </p>
+    <div class="hero-divider"></div>
+    <div class="hero-meta">
+      <div class="meta-item"><span class="meta-label">Plataforma</span><span class="meta-value">IBM API Connect v12 · Analítica</span></div>
+      <div class="meta-item"><span class="meta-label">Perspectiva</span><span class="meta-value">Administrador de APIs</span></div>
+      <div class="meta-item"><span class="meta-label">Prerrequisito</span><span class="meta-value">API productiva con al menos un consumo registrado</span></div>
+      <div class="meta-item"><span class="meta-label">Duración</span><span class="meta-value">~10 min</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT -->
+<main class="content">
+
+  <!-- TOC -->
+  <div class="toc">
+    <p class="toc-title">Contenido</p>
+    <ol>
+      <li><a href="#sec-concepto">¿Qué es la analítica en APIC?</a></li>
+      <li><a href="#sec-pasos">Reportes pre-definidos</a>
+        <ol style="margin-top:4px">
+          <li><a href="#sec-paso1">Informe 1: Tendencias de volumen de llamadas</a></li>
+          <li><a href="#sec-paso2">Informe 2: Tendencias del consumidor</a></li>
+          <li><a href="#sec-paso3">Informe 3: Informe de consumo</a></li>
+          <li><a href="#sec-paso4">Informe 4: Organizaciones de consumidores inactivas</a></li>
+          <li><a href="#sec-paso5">Otros informes</a></li>
+        </ol>
+      </li>
+      <li><a href="#sec-discovery">Discovery</a>
+        <ol style="margin-top:4px">
+          <li><a href="#sec-paso6">API Timeline</a></li>
+          <li><a href="#sec-paso7">API Event</a></li>
+        </ol>
+      </li>
+      <li><a href="#sec-paso8">Dashboards</a></li>
+
+
+      <li><a href="#sec-verificacion">Verificación</a></li>
+    </ol>
+  </div>
+
+  <!-- CONCEPTO -->
+  <h2 class="sec-heading" id="sec-concepto">¿Qué es la analítica en APIC?</h2>
+  <div class="concept-box">
+    <p class="concept-box-title">Concepto clave: Módulo de Analítica</p>
+    <p>IBM API Connect recopila automáticamente datos de cada llamada que atraviesa el gateway y los expone a través del módulo de analítica integrado en la plataforma. No requiere instrumentación adicional en las APIs.</p>
+    <p>Desde la sección <strong>Analítica</strong> del API Manager, el administrador accede a informes preconfigurados organizados en tres categorías: <strong>Informes</strong> (vistas tabulares y de gráficos), <strong>Descubrir</strong> (exploración libre de eventos) y <strong>Paneles de control</strong> (dashboards personalizables).</p>
+  </div>
+
+  <div class="report-grid" style="margin-bottom:8px">
+    <div class="report-card">
+      <p class="report-card-title">Informes disponibles (selección)</p>
+      <p>Tendencias de volumen de llamadas · Tendencias del consumidor · Informe de consumo · Productos inactivos · Organizaciones de consumidores · Productos en desuso · Informe de clasificación · Evolución del uso · Informe de uso de disco · Informe sobre límites de velocidad</p>
+    </div>
+    <div class="report-card">
+      <p class="report-card-title">Datos capturados por llamada</p>
+      <p>API invocada · Producto y plan · Aplicación consumidora · Código de estado HTTP · Latencia y tiempo de respuesta · Bytes enviados y recibidos · Timestamp · Organización de consumidor</p>
+    </div>
+  </div>
+
+  <!-- PASOS -->
+  <h2 class="sec-heading" id="sec-pasos">Reportes pre-definidos</h2>
+
+  <!-- INFORME 1 -->
+  <p class="section-label" id="sec-paso1" style="margin-top:8px">Informe 1: Tendencias de volumen de llamadas</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">1</div><strong>Navegar a Analítica y leer el informe de tendencias de volumen</strong></div>
+    <div class="step-body">
+      <p>En el <strong>API Manager</strong>, hacé click en el ícono de analítica del menú lateral izquierdo (gráfico de barras). En el panel izquierdo, bajo <strong>Informes</strong>, seleccioná <strong>Tendencias de volumen de llamadas</strong> (Call volume trends).</p>
+      <p>Las <strong>tendencias de volumen de llamadas</strong> te dan una vista general de la actividad de tus APIs en el rango de tiempo que elijas. El reporte muestra el total de llamadas, cuántas fueron exitosas y cuántas fallaron, y el volumen de bytes enviados y recibidos.</p>
+      <p>Debajo de los KPIs, el gráfico de dona <strong>Códigos de estado (detallados)</strong> desglosa las llamadas por familia de código HTTP. El gráfico de líneas a la derecha muestra el <strong>volumen total por éxitos y errores en el tiempo</strong>.</p>
+      <img src="assets/images/lab7-1.png" alt="Informe Tendencias de volumen de llamadas: KPIs, donut de códigos de estado y gráfico de líneas éxitos vs errores" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>En el mismo informe vas a encontrar otros KPIs: <strong>Bytes received</strong> y <strong>Bytes sent</strong> (volumen de datos recibidos y enviados), <strong>Breakdown by catalog</strong> (llamadas por catálogo), <strong>Response time percentiles</strong> (percentiles del tiempo de respuesta), <strong>API usage by product and API</strong> (uso de cada API agrupado por producto), <strong>Leaderboard for APIs, Products and Plans</strong> (ranking de APIs, productos y planes), <strong>Top consumer organizations</strong> (organizaciones consumidoras con más llamadas) y <strong>Top applications</strong> (aplicaciones con más consumo).</p>
+
+      <div class="callout callout-info">
+        <strong>Selector de analytics-service</strong>
+        <p>En la parte superior del panel izquierdo aparece el selector del servicio de analítica. Si tu organización tiene múltiples servicios configurados, podés cambiar entre ellos aquí. En el lab usamos <code>analytics-service</code>.</p>
+      </div>
+      <div class="callout callout-warn">
+        <strong>Datos insuficientes para pronósticos</strong>
+        <p>El aviso azul indica que se necesitan al menos 14 días de datos históricos no nulos para que APIC pueda generar una previsión de tendencia. Es normal en ambientes nuevos o con poco tráfico. El informe sigue siendo útil para el análisis del período actual.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFORME 2 -->
+  <p class="section-label" id="sec-paso2" style="margin-top:32px">Informe 2: Tendencias del consumidor</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">2</div><strong>Abrir el informe Tendencias del consumidor</strong></div>
+    <div class="step-body">
+      <p>En el panel izquierdo, hacé click en <strong>Tendencias del consumidor</strong> (Consumer Trends). Este informe se enfoca en la evolución cómo evoluciona a largo plazo la actividad de los consumidores: el uso de aplicaciones, la cantidad de suscripciones y el volumen de llamadas a las APIs</p>
+      <p>El gráfico de barras <strong>Total de aplicaciones</strong> muestra la evolución diaria.. La línea de <strong>Previsión</strong> proyecta esa tendencia hacia adelante.</p>
+      <img src="assets/images/lab7-4.png" alt="Informe Tendencias del consumidor con KPIs de consumidores, apps y suscripciones, y gráfico de barras de total de aplicaciones en el tiempo con línea de previsión" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <div class="callout callout-ok">
+        <strong>En el día a día: Decisiones cruzando informes</strong>
+        <p>En la imagen hay 4 consumidores con 4 apps pero ninguna suscripción en este período. Los consumidores crearon apps pero aún no suscribieron a ninguna API. Este dato, cruzado con el informe de organizaciones inactivas, puede ayudarte a identificar quién necesita asistencia para completar el onboarding.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFORME 3 -->
+  <p class="section-label" id="sec-paso3" style="margin-top:32px">Informe 3: Informe de consumo</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">3</div><strong>Abrir el Informe de consumo</strong></div>
+    <div class="step-body">
+      <p>En el panel izquierdo, hacé click en <strong>Informe de consumo</strong> (Consumption Report). Este informe muestra las tendencias a largo plazo de las llamadas a las APIs que procesan los gateways. Te sirve para revisar cómo evoluciona ese volumen a lo largo del tiempo en el alcance que tengas seleccionado, algo clave para los datos que se necesitan en el licenciamiento basado en consumo.</p>
+      <img src="assets/images/lab7-3.png" alt="Informe de consumo con gráfico de barras por código de estado y tabla diaria detallada con columnas 1xx a Config-sync" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <div class="callout callout-info">
+        <strong>Leyenda de códigos de estado</strong>
+        <p>El informe clasifica las llamadas en: <strong>1xx</strong> (informativas), <strong>2xx</strong> (éxitos), <strong>3xx</strong> (redirecciones), <strong>4xx</strong> (errores del cliente, como credenciales inválidas o recurso no encontrado), <strong>5xx</strong> (errores del servidor) y <strong>Config-sync</strong> (tráfico interno de sincronización de configuración del gateway). En este ambiente, los errores 4xx son los más frecuentes en ambientes de laboratorio porque estuvimos probando APIs con credenciales incorrectas o sin suscripción activa.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFORME 4 -->
+  <p class="section-label" id="sec-paso4" style="margin-top:32px">Informe 4: Organizaciones de consumidores inactivas</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">4</div><strong>Abrir el informe de organizaciones inactivas</strong></div>
+    <div class="step-body">
+      <p>En el panel izquierdo, bajo <strong>Informes</strong>, hacé click en <strong>Organizaciones de consumidores inactivas</strong> (Inactive consumer organizations). Este informe te muestra un <strong>embudo de actividad</strong> que segmenta a todas las organizaciones de consumidores según su nivel de inactividad.</p>
+      <img src="assets/images/lab7-2.png" alt="Informe Organizaciones de consumidores inactivas con embudo de actividad en 4 niveles y totales por segmento" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>El embudo muestra organizaciones de consumidores distribuidas en los siguientes niveles:</p>
+      <table>
+        <tr><th>Nivel del embudo</th><th>Descripción</th></tr>
+        <tr><td>Sin aplicaciones</td><td>Orgs que no tienen ninguna app registrada</td></tr>
+        <tr><td>Sin suscripciones</td><td>Orgs que tienen apps registradas pero ninguna suscripción a APIs</td></tr>
+        <tr><td>Sin tráfico</td><td>Orgs con apps suscriptas a APIs pero que no generaron llamadas</td></tr>
+        <tr><td>Sin tráfico reciente</td><td>Orgs con apps suscriptas a APIs pero sin actividad en el período analizado</td></tr>
+      </table>
+      <div class="callout callout-ok">
+        <strong>En el día a día: Herramienta de seguimiento de adopción</strong>
+        <p>Este embudo es muy útil para gestionar el ciclo de vida de los consumidores. Permite identificar en qué paso del proceso (registro, suscripción, primer consumo) se están trabando los equipos y actuar proactivamente para desbloquearlos.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- OTROS INFORMES -->
+  <p class="section-label" id="sec-paso5" style="margin-top:32px">Otros informes</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">5</div><strong>Informes adicionales disponibles en IBM API Connect</strong></div>
+    <div class="step-body">
+      <table>
+        <tr><th>Informe</th><th>Descripción</th></tr>
+        <tr><td>AI Platform Report</td><td>Analiza las tendencias a largo plazo del volumen de llamadas de los proveedores de AI Platform y de los consumidores de recursos de AI LLM y MCP.</td></tr>
+        <tr><td>Inactive Products</td><td>Identifica los productos sin suscripciones, sin tráfico o sin tráfico reciente.</td></tr>
+        <tr><td>Deprecated products with traffic</td><td>Muestra los productos deprecados que todavía reciben tráfico. Conviene migrar a esos consumidores a un plan de reemplazo.</td></tr>
+        <tr><td>Leaderboard report</td><td>Muestra datos de rendimiento ordenados en rankings para tus APIs, productos, planes, aplicaciones y más.</td></tr>
+        <tr><td>Usage evolution report</td><td>Hace un seguimiento de cómo cambian los productos, las APIs, los planes, las aplicaciones y las organizaciones consumidoras en un período de un año.</td></tr>
+        <tr><td>Disk usage report</td><td>Permite seguir y monitorear el uso de almacenamiento de las APIs, los productos, las aplicaciones y las organizaciones consumidoras.</td></tr>
+        <tr><td>Rate limit report</td><td>Permite monitorear las aplicaciones que se acercan a sus límites de tasa (rate limits) e identificar posibles problemas de throttling.</td></tr>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- DISCOVERY -->
+  <h2 class="sec-heading" id="sec-discovery">Discovery</h2>
+  <p class="section-label" id="sec-paso6" style="margin-top:32px">Linea de tiempo y detalle de las API Calls</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">6</div><strong>API Timeline</strong></div>
+    <div class="step-body">
+      <p><strong>Discovery</strong> te permite ver los datos en crudo de los eventos de API y examinar cada evento de forma individual. Podés aplicar filtros para refinar los resultados o inspeccionar un evento de API y enfocarte en los datos que te interesan.</p>
+        <img src="assets/images/06-discovery-api-calls.png" alt="Vista Discovery con los eventos de API, filtros y gráfico de línea de tiempo" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+
+      <div class="callout callout-warn">
+        <strong>Límites de Discovery</strong>
+        <p>Desde la interfaz podés acceder a un máximo de <strong>10.000 eventos de API</strong>. En la vista de Discovery se pueden mostrar hasta <strong>200 registros de eventos por página</strong>.</p>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Personalización y exportación</strong>
+        <p>Podés personalizar las columnas que se muestran en la sección <strong>Filters</strong>. Para ordenar la tabla de forma ascendente o descendente, hacé click en el encabezado de la columna.</p>
+        <p>El gráfico de línea de tiempo se puede cambiar a un eje Y logarítmico, y podés exportar los datos del gráfico haciendo click en <strong>Actions</strong>, en la esquina superior derecha del gráfico.</p>
+        <p>Para exportar los datos de los eventos de API de la tabla, hacé click en <strong>Actions</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="section-label" id="sec-paso7" style="margin-top:32px">API Events</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">7</div><strong>Hace clic sobre cualquier evento de API</strong></div>
+    <div class="step-body">
+      <p>Al hacer clic en una llamada, podrás acceder a información detallada de ese evento. Podrás ver el detalle del request y response del backend, latencia de cada política implementada y el registro completo que IBM API Connect almacena de cada llamada.</p>
+      
+      <img src="assets/images/07a-discovery-api-event.png" alt="Detalle de un evento de API en Discovery" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <img src="assets/images/07b-discovery-api-event-latency.png" alt="Latencia de cada política en un evento de API" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <img src="assets/images/07c-discovery-api-event-record.png" alt="Registro completo de un evento de API" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+
+  <!-- DASHBOARDS -->
+  <h2 class="sec-heading" id="sec-dashboards">Dashboards</h2>
+  <p class="section-label" id="sec-paso8" style="margin-top:32px">Paneles de control</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">8</div><strong>Ir a Dashboards y elegir la opción Summary</strong></div>
+    <div class="step-body">
+      <p>Los dashboards de analítica de la interfaz del API Manager muestran los datos de eventos de API en el alcance de la organización proveedora, catálogos y spaces.</p>
+
+        <img src="assets/images/08-dashboard-summary.png" alt="Dashboard Summary de analítica en el API Manager" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+
+  <p>Estos son los dashboards disponibles:</p>
+  <table>
+    <tr><th>Dashboard</th><th>Descripción</th></tr>
+    <tr><td>Summary</td><td>Información de un vistazo sobre los volúmenes de llamadas, las latencias y en qué momentos se hacen esas llamadas.</td></tr>
+    <tr><td>Consumption</td><td>Total de llamadas a las APIs procesadas por los gateways a lo largo del tiempo en ese alcance. Es necesario para el licenciamiento basado en consumo.</td></tr>
+    <tr><td>API</td><td>Todo lo que necesitás saber sobre qué APIs se están llamando y cuáles no.</td></tr>
+    <tr><td>Product</td><td>Qué productos son los más populares, tanto en total como a lo largo del tiempo.</td></tr>
+    <tr><td>AI LLM</td><td>Permite seguir la cantidad de tokens de IA y el uso de modelos, para ver cómo se están usando los servicios de IA.</td></tr>
+    <tr><td>MCP</td><td>Muestra quiénes usan más tus servicios de IA con MCP (Model Context Protocol), y permite seguir la cantidad y el uso de herramientas (tools) y prompts.</td></tr>
+    <tr><td>Consumer</td><td>Permite determinar qué organizaciones consumidoras hacen más llamadas a las APIs, en total y a lo largo del tiempo.</td></tr>
+    <tr><td>Application</td><td>Muestra qué aplicaciones son responsables de la mayor cantidad de llamadas a las APIs, en total y a lo largo del tiempo.</td></tr>
+    <tr><td>Client</td><td>Muestra quién llama a tus APIs y desde qué dispositivos.</td></tr>
+    <tr><td>Status</td><td>Información crítica sobre los éxitos y los fallos de las llamadas. Muestra las tasas de éxito y de falla a lo largo del tiempo, junto con el desglose por código de respuesta HTTP.</td></tr>
+    <tr><td>Latency</td><td>Muestra cuánto tardan las APIs en devolver una respuesta y cómo cambia esa latencia a lo largo del tiempo.</td></tr>
+    <tr><td>Data</td><td>Todo sobre los payloads de las requests y las responses. Muestra qué APIs, consumidores y aplicaciones generan los payloads más grandes.</td></tr>
+    <tr><td>Gateway</td><td>Volumen de llamadas y latencia de cada gateway en cada servicio de gateway. Sirve para saber si la carga se reparte de forma pareja o si algún gateway tiene bajo rendimiento.</td></tr>
+  </table>
+
+  <div class="callout callout-info">
+    <strong>Exportación de gráficos</strong>
+    <p>Podés exportar cada gráfico de un dashboard como imagen <strong>PNG</strong> o <strong>JPG</strong>. También podés exportar los datos de origen del gráfico como archivo <strong>JSON</strong> o <strong>CSV</strong>.</p>
+  </div>
+  </div> 
+
+
+  <!-- VERIFICACIÓN -->
+  <h2 class="sec-heading" id="sec-verificacion">Verificación</h2>
+  <p style="font-size:13px;color:var(--ibm-gray-80);margin-bottom:14px">Al finalizar este laboratorio deberías poder:</p>
+  <ul class="checklist">
+    <li>Navegar a la sección <strong>Analítica</strong> del API Manager y seleccionar el <code>analytics-service</code>.</li>
+    <li>Interpretar los KPIs del informe <strong>Tendencias de volumen de llamadas</strong>: totales, éxitos, errores y bytes.</li>
+    <li>Leer el gráfico de dona de <strong>códigos de estado</strong> e identificar la proporción de errores vs éxitos.</li>
+    <li>Analizar el informe <strong>Tendencias del consumidor</strong> para entender la evolución de apps y suscripciones.</li>
+    <li>Usar el <strong>Informe de consumo</strong> para identificar picos de actividad y distribución de errores por día.</li>
+    <li>Interpretar el <strong>embudo de organizaciones inactivas</strong> para detectar consumidores trabados en el proceso de onboarding.</li>
+  </ul>
+
+</main>
+
+<footer class="page-footer">
+  <span>Workshop API Connect · Banco Provincia · 2026</span>
+  <span class="footer-ibm">IBM</span>
+</footer>
+
+<button id="btn-back-top" title="Volver al inicio" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>
+  window.addEventListener('scroll', function() {
+    document.getElementById('btn-back-top')
+      .classList.toggle('visible', window.scrollY > 400);
+  });
+</script>
+</body>
+</html>

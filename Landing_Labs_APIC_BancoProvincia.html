@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laboratorios · Workshop API Connect · Banco Provincia</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@300;400&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ibm-blue-60:  #0F62FE;
+      --ibm-blue-80:  #002D9C;
+      --ibm-blue-90:  #001141;
+      --ibm-navy:     #001D6C;
+      --ibm-teal-50:  #009D9A;
+      --ibm-teal-70:  #005D5D;
+      --ibm-cyan-10:  #E5F6FF;
+      --ibm-cyan-40:  #33B1FF;
+      --ibm-gray-10:  #F4F4F4;
+      --ibm-gray-20:  #E0E0E0;
+      --ibm-gray-60:  #6F6F6F;
+      --ibm-gray-80:  #393939;
+      --ibm-white:    #FFFFFF;
+      --ibm-black:    #161616;
+      --ibm-purple:   #6929C4;
+      --ibm-amber:    #B4530A;
+      --ibm-red:      #DA1E28;
+    }
+
+    html { font-size: 15px; scroll-behavior: smooth; }
+
+    body {
+      font-family: 'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif;
+      font-weight: 300;
+      color: var(--ibm-black);
+      background: var(--ibm-gray-10);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--ibm-navy);
+      color: var(--ibm-white);
+      padding: 0 64px;
+      min-height: 52vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 4px;
+      background: var(--ibm-blue-60);
+    }
+    .hero-grid {
+      position: absolute;
+      top: 0; right: 0;
+      width: 45%; height: 100%;
+      opacity: 0.04;
+      background-image:
+        repeating-linear-gradient(0deg, #fff 0, #fff 1px, transparent 1px, transparent 60px),
+        repeating-linear-gradient(90deg, #fff 0, #fff 1px, transparent 1px, transparent 60px);
+    }
+    .hero-accent {
+      position: absolute;
+      bottom: -120px; right: -120px;
+      width: 420px; height: 420px;
+      border-radius: 50%;
+      border: 1px solid rgba(15, 98, 254, 0.25);
+    }
+    .hero-accent::after {
+      content: '';
+      position: absolute;
+      top: 40px; left: 40px; right: 40px; bottom: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(15, 98, 254, 0.15);
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      padding: 72px 0 64px;
+    }
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 24px; height: 1px;
+      background: var(--ibm-blue-60);
+    }
+    .hero-title {
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 300;
+      line-height: 1.1;
+      max-width: 680px;
+      margin-bottom: 8px;
+    }
+    .hero-title em { font-style: normal; color: var(--ibm-blue-60); }
+    .hero-tagline {
+      font-size: 15px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.55);
+      margin-top: 20px;
+      max-width: 520px;
+      line-height: 1.6;
+    }
+    .hero-divider {
+      width: 48px; height: 2px;
+      background: var(--ibm-blue-60);
+      margin: 32px 0;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+    .meta-item { display: flex; flex-direction: column; gap: 4px; }
+    .meta-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+      font-weight: 400;
+    }
+    .meta-value {
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.85);
+    }
+
+    /* ── MAIN CONTENT ── */
+    .content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 64px 32px 96px;
+    }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ibm-gray-60);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1; height: 1px;
+      background: var(--ibm-gray-20);
+    }
+
+    /* ── NUMBER BADGE callout ── */
+    .nn-callout {
+      background: var(--ibm-navy);
+      color: var(--ibm-white);
+      border-radius: 2px;
+      padding: 24px 28px;
+      margin-bottom: 52px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .nn-icon {
+      flex-shrink: 0;
+      width: 40px; height: 40px;
+      background: var(--ibm-blue-60);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'IBM Plex Mono', monospace;
+      color: #fff;
+    }
+    .nn-body { flex: 1; }
+    .nn-body strong {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ibm-blue-60);
+      margin-bottom: 10px;
+    }
+    .nn-body p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.65;
+    }
+    .nn-badge {
+      display: inline-block;
+      background: var(--ibm-blue-60);
+      color: #fff;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      font-weight: 400;
+      padding: 1px 7px;
+      border-radius: 2px;
+    }
+    .nn-mono {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      color: rgba(255,255,255,0.85);
+    }
+
+    /* ── LAB BLOCKS GRID ── */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 56px;
+    }
+    @media (max-width: 720px) { .lab-grid { grid-template-columns: 1fr; } }
+
+    .lab-card {
+      background: var(--ibm-white);
+      border: 1px solid var(--ibm-gray-20);
+      border-top: 3px solid var(--card-accent, var(--ibm-blue-60));
+      border-radius: 2px;
+      padding: 28px 26px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: box-shadow 0.15s, transform 0.15s;
+      cursor: pointer;
+    }
+    .lab-card:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    .lab-number {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--card-accent, var(--ibm-blue-60));
+    }
+    .lab-icon-wrap {
+      width: 44px; height: 44px;
+      border-radius: 2px;
+      background: var(--card-bg, #EDF5FF);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--card-accent, var(--ibm-blue-60));
+    }
+    .lab-title {
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 1.25;
+      color: var(--ibm-black);
+    }
+    .lab-desc {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--ibm-gray-60);
+      line-height: 1.6;
+      flex: 1;
+    }
+    .lab-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tag {
+      font-size: 11px;
+      font-weight: 400;
+      padding: 2px 8px;
+      border-radius: 2px;
+      background: var(--card-bg, #EDF5FF);
+      color: var(--card-accent, var(--ibm-blue-60));
+    }
+    .lab-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px solid var(--ibm-gray-20);
+      margin-top: auto;
+    }
+    .lab-duration {
+      font-size: 11px;
+      color: var(--ibm-gray-60);
+    }
+    .lab-cta {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--card-accent, var(--ibm-blue-60));
+      letter-spacing: 0.04em;
+      text-decoration: none;
+    }
+
+    /* ── ENVIRONMENT TABLE ── */
+    .env-panel {
+      background: var(--ibm-white);
+      border: 1px solid var(--ibm-gray-20);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 56px;
+    }
+    .env-header {
+      background: var(--ibm-navy);
+      color: var(--ibm-white);
+      padding: 14px 28px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .env-table { width: 100%; border-collapse: collapse; }
+    .env-table tr { border-bottom: 1px solid var(--ibm-gray-20); }
+    .env-table tr:last-child { border-bottom: none; }
+    .env-table td {
+      padding: 14px 28px;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+    .env-table td:first-child {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ibm-gray-60);
+      white-space: nowrap;
+      width: 200px;
+    }
+    .env-table td:last-child { color: var(--ibm-gray-80); }
+    .env-mono {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      color: var(--ibm-blue-60);
+      background: #EDF5FF;
+      padding: 2px 7px;
+      border-radius: 2px;
+    }
+    .env-placeholder {
+      color: var(--ibm-gray-60);
+      font-style: italic;
+      font-size: 12px;
+    }
+
+    /* ── REPO LINK ── */
+    .repo-link {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--ibm-white);
+      border: 1px solid var(--ibm-gray-20);
+      border-left: 4px solid var(--ibm-teal-50);
+      padding: 20px 24px;
+      border-radius: 2px;
+      text-decoration: none;
+      color: inherit;
+      margin-bottom: 56px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .repo-link:hover {
+      border-left-color: var(--ibm-teal-70);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    .repo-icon {
+      flex-shrink: 0;
+      width: 38px; height: 38px;
+      background: var(--ibm-teal-50);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .repo-text { flex: 1; }
+    .repo-text strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ibm-black);
+      margin-bottom: 3px;
+    }
+    .repo-text span {
+      font-size: 12px;
+      color: var(--ibm-gray-60);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .repo-arrow { color: var(--ibm-teal-50); font-size: 20px; }
+
+    /* ── MATERIAL ADICIONAL ── */
+    .ref-list {
+      background: var(--ibm-white);
+      border: 1px solid var(--ibm-gray-20);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .ref-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--ibm-gray-20);
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.1s;
+    }
+    .ref-item:last-child { border-bottom: none; }
+    .ref-item:hover { background: var(--ibm-gray-10); }
+    .ref-dot {
+      flex-shrink: 0;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--ibm-blue-60);
+    }
+    .ref-body { flex: 1; }
+    .ref-body strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ibm-black);
+      margin-bottom: 3px;
+    }
+    .ref-body span {
+      font-size: 12px;
+      color: var(--ibm-gray-60);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .ref-arrow { color: var(--ibm-blue-60); font-size: 16px; flex-shrink: 0; }
+
+    /* ── FOOTER ── */
+    .page-footer {
+      border-top: 1px solid var(--ibm-gray-20);
+      padding: 20px 32px;
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--ibm-gray-60);
+    }
+    .footer-ibm { font-weight: 500; letter-spacing: 0.06em; }
+
+    /* ── ÍNDICE DE LABORATORIOS ── */
+    .lab-index-section { margin-bottom: 48px; }
+
+    .lab-index-card {
+      background: var(--ibm-white);
+      border: 1px solid var(--ibm-gray-20);
+      border-left: 4px solid var(--accent-color, var(--ibm-blue-60));
+      border-radius: 2px;
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 0.15s;
+    }
+    .lab-index-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+    .lab-index-meta { flex: 1; min-width: 0; }
+
+    .lab-index-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-color, var(--ibm-blue-60));
+      margin-bottom: 4px;
+      display: block;
+    }
+    .lab-index-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ibm-black);
+      margin-bottom: 4px;
+    }
+    .lab-index-desc {
+      font-size: 12px;
+      color: var(--ibm-gray-60);
+      line-height: 1.55;
+    }
+    .lab-index-cta {
+      flex-shrink: 0;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent-color, var(--ibm-blue-60));
+      white-space: nowrap;
+      align-self: center;
+    }
+
+    .lab-index-empty {
+      font-size: 13px;
+      color: var(--ibm-gray-60);
+      background: var(--ibm-gray-10);
+      border: 1px dashed var(--ibm-gray-20);
+      border-radius: 2px;
+      padding: 14px 18px;
+    }
+
+    @media (max-width: 720px) {
+      .hero { padding: 0 28px; }
+      .hero-meta { gap: 28px; }
+      .content { padding: 40px 20px 64px; }
+      .env-table td:first-child { width: 130px; }
+      .lab-index-card { flex-direction: column; gap: 10px; }
+      .lab-index-cta { align-self: flex-start; }
+    }
+  </style>
+  <!-- Índice de labs — editar labs-index.js -->
+  <script src="labs-index.js"></script>
+  <!-- Valores de ambiente — editar datos-ambiente.js -->
+  <script src="datos-ambiente.js"></script>
+</head>
+<body>
+
+  <!-- ═══ HERO ════════════════════════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-accent"></div>
+
+    <div class="hero-inner">
+      <p class="hero-eyebrow">IBM · Banco Provincia · 2026</p>
+
+      <h1 class="hero-title">
+        Laboratorios<br>
+        <em>API Connect</em>
+      </h1>
+
+      <p class="hero-tagline">
+        Experiencia práctica sobre IBM API Connect v12 en OpenShift.<br>
+        Perspectiva del provider y del consumer — hands-on sobre el ambiente real.
+      </p>
+
+      <div class="hero-divider"></div>
+
+      <div class="hero-meta">
+        <div class="meta-item">
+          <span class="meta-label">Duración total</span>
+          <span class="meta-value">~120 min</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Formato</span>
+          <span class="meta-value">Hands-on · Individual</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Laboratorios</span>
+          <span class="meta-value" id="meta-total-labs">--</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Perfil requerido</span>
+          <span class="meta-value">Técnico — Desarrollo / Arquitectura</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CONTENT ══════════════════════════════════════════════════════════ -->
+  <main class="content">
+
+    <!-- LABORATORIOS -->
+    <p class="section-label">Los laboratorios</p>
+    <div class="lab-grid">
+
+      <!-- Bloque 01 — Experiencia de Proveedores -->
+      <a class="lab-card" href="#index-proveedores" style="--card-accent: #0F62FE; --card-bg: #EDF5FF; text-decoration: none; color: inherit;">
+        <span class="lab-number">Bloque 01</span>
+        <div class="lab-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        <h2 class="lab-title">Experiencia de<br>Proveedores</h2>
+        <p class="lab-desc">
+          Creación de una API REST desde cero en el API Studio, definición del
+          Assembly en el DataPower Gateway, publicación al catálogo y gestión del
+          ciclo de vida del Product. Perspectiva del equipo que diseña y expone APIs.
+        </p>
+        <div class="lab-tags">
+          <span class="tag">API Studio</span>
+          <span class="tag">Assembly</span>
+          <span class="tag">Lifecycle</span>
+          <span class="tag">Product</span>
+        </div>
+        <div class="lab-footer">
+          <span class="lab-duration">⏱ ~60 min</span>
+          <span class="lab-cta">Ver guía →</span>
+        </div>
+      </a>
+
+      <!-- Bloque 02 — Experiencia de Consumidores -->
+      <a class="lab-card" href="#index-consumidores" style="--card-accent: #009D9A; --card-bg: #D9FBFB; text-decoration: none; color: inherit;">
+        <span class="lab-number">Bloque 02</span>
+        <div class="lab-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <path d="M8 21h8M12 17v4"/>
+            <path d="M7 8l2 2-2 2M11 12h5"/>
+          </svg>
+        </div>
+        <h2 class="lab-title">Experiencia de<br>Consumidores</h2>
+        <p class="lab-desc">
+          Exploración del Developer Portal, suscripción a una API publicada, obtención
+          de credenciales de aplicación y consumo desde el portal y desde la línea
+          de comandos. Perspectiva del equipo que integra y consume APIs.
+        </p>
+        <div class="lab-tags">
+          <span class="tag">Developer Portal</span>
+          <span class="tag">App Registration</span>
+          <span class="tag">OAuth</span>
+          <span class="tag">curl</span>
+        </div>
+        <div class="lab-footer">
+          <span class="lab-duration">⏱ ~60 min</span>
+          <span class="lab-cta">Ver guía →</span>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- DATOS DEL AMBIENTE -->
+    <p class="section-label">Datos del ambiente</p>
+    <div class="env-panel">
+      <div class="env-header">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="8" rx="2"/>
+          <rect x="2" y="14" width="20" height="8" rx="2"/>
+          <line x1="6" y1="6" x2="6.01" y2="6"/>
+          <line x1="6" y1="18" x2="6.01" y2="18"/>
+        </svg>
+        Ambiente IBM API Connect v12
+      </div>
+      <table class="env-table">
+        <tr>
+          <td>Producto</td>
+          <td><span class="env-mono">IBM API Connect</span></td>
+        </tr>
+        <tr>
+          <td>Versión</td>
+          <td><span class="env-mono">v12.1.x</span></td>
+        </tr>
+        <tr>
+          <td>Plataforma</td>
+          <td><span class="env-mono">Red Hat OpenShift</span></td>
+        </tr>
+        <tr>
+          <td>API Manager URL</td>
+          <td><span class="env-mono" id="cfg-api-manager-url"></span></td>
+        </tr>
+        <tr>
+          <td>Developer Portal URL</td>
+          <td><span class="env-mono" id="cfg-portal-url"></span></td>
+        </tr>
+        <tr>
+          <td>Organización de API</td>
+          <td><span class="env-mono" id="cfg-apic-org"></span></td>
+        </tr>
+        <tr>
+          <td>Catálogo</td>
+          <td><span class="env-mono" id="cfg-apic-catalog"></span></td>
+        </tr>
+        <tr>
+          <td>Usuario</td>
+          <td><span class="env-placeholder">Tu mail, sin el @bpba.com.ar</span></td>
+        </tr>
+        <tr>
+          <td>Contraseña</td>
+          <td><span class="env-placeholder">password12345</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- IDENTIFICADOR DE LABORATORIO -->
+    <div class="nn-callout">
+      <div class="nn-icon">ID</div>
+      <div class="nn-body">
+        <strong>Antes de arrancar: tu identificador de laboratorio</strong>
+        <p>
+          El facilitador te asignó un <strong style="color:#fff">número de ambiente</strong> (ej: <span class="nn-badge">01</span>) al inicio del workshop.
+          Cada laboratorio tiene un botón <span class="nn-mono">Lab setup</span> en la barra superior donde ingresás las 4 letras de tu nombre y ese número —
+          por ejemplo <span class="nn-badge">juan01</span>.
+          Como todos los participantes trabajan sobre el mismo ambiente APIC compartido,
+          este setup actualiza todos los nombres y comandos de la guía para evitar inconvenientes.
+        </p>
+      </div>
+    </div>
+
+    <!-- ÍNDICE DE LABORATORIOS DE PROVEEDORES -->
+    <p class="section-label">Laboratorios de Proveedores</p>
+    <div class="lab-index-section" id="index-proveedores"></div>
+
+    <!-- ÍNDICE DE LABORATORIOS DE CONSUMIDORES -->
+    <p class="section-label">Laboratorios de Consumidores</p>
+    <div class="lab-index-section" id="index-consumidores"></div>
+
+    <!-- REPOSITORIO -->
+    <p class="section-label">Repositorio de materiales</p>
+    <a class="repo-link" href="#" target="_blank">
+      <div class="repo-icon">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+      </div>
+      <div class="repo-text">
+        <strong>Archivos adicionales del lab</strong>
+        <span>— a completar por el facilitador —</span>
+      </div>
+      <span class="repo-arrow">→</span>
+    </a>
+
+    <!-- MATERIAL ADICIONAL -->
+    <p class="section-label">Material adicional</p>
+    <div class="ref-list">
+      <a class="ref-item" href="https://www.ibm.com/docs/en/api-connect/software/12.1.1" target="_blank">
+        <div class="ref-dot"></div>
+        <div class="ref-body">
+          <strong>Documentación IBM API Connect</strong>
+          <span>ibm.com/docs/en/api-connect/software/12.1.1</span>
+        </div>
+        <span class="ref-arrow">↗</span>
+      </a>
+      <a class="ref-item" href="https://apic-api.apiconnect.ibmcloud.com/v12/index.html" target="_blank">
+        <div class="ref-dot"></div>
+        <div class="ref-body">
+          <strong>Documentación APIs de IBM API Connect</strong>
+          <span>apic-api.apiconnect.ibmcloud.com/v12/index.html</span>
+        </div>
+        <span class="ref-arrow">↗</span>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- ═══ FOOTER ═══════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  if (typeof LAB_CONFIG !== 'undefined') {
+    document.getElementById('cfg-apic-org').textContent        = LAB_CONFIG.apic_org;
+    document.getElementById('cfg-apic-catalog').textContent    = LAB_CONFIG.apic_catalog;
+    document.getElementById('cfg-api-manager-url').innerHTML = '<a href="' + LAB_CONFIG.api_manager_url + '" target="_blank" style="color:inherit;text-decoration:none;">' + LAB_CONFIG.api_manager_url + '</a>';
+    document.getElementById('cfg-portal-url').innerHTML      = '<a href="' + LAB_CONFIG.portal_url      + '" target="_blank" style="color:inherit;text-decoration:none;">' + LAB_CONFIG.portal_url      + '</a>';
+  }
+
+  function renderLabIndex(containerId, labs, accentColor) {
+    var el = document.getElementById(containerId);
+    if (!el) return;
+    if (!labs || labs.length === 0) {
+      el.innerHTML = '<p class="lab-index-empty">Próximamente — no hay laboratorios configurados para este bloque todavía.</p>';
+      return;
+    }
+    el.innerHTML = labs.map(function (lab) {
+      return [
+        '<a class="lab-index-card" href="' + lab.path + '" style="--accent-color:' + accentColor + '">',
+        '  <div class="lab-index-meta">',
+        '    <span class="lab-index-num">' + lab.num + '</span>',
+        '    <div class="lab-index-title">' + lab.title + '</div>',
+        '    <div class="lab-index-desc">' + lab.desc + '</div>',
+        '  </div>',
+        '  <span class="lab-index-cta">Ver guía →</span>',
+        '</a>',
+      ].join('\n');
+    }).join('\n');
+  }
+
+  if (typeof LABS_INDEX !== 'undefined') {
+    var totalLabs = (LABS_INDEX.proveedores ? LABS_INDEX.proveedores.length : 0) +
+                    (LABS_INDEX.consumidores ? LABS_INDEX.consumidores.length : 0);
+    var totalLabsEl = document.getElementById('meta-total-labs');
+    if (totalLabsEl) {
+      totalLabsEl.textContent = totalLabs + (totalLabs === 1 ? ' laboratorio' : ' laboratorios');
+    }
+
+    renderLabIndex('index-proveedores', LABS_INDEX.proveedores, '#0F62FE');
+    renderLabIndex('index-consumidores', LABS_INDEX.consumidores, '#009D9A');
+  }
+})();
+</script>
+
+  <footer class="page-footer">
+    <span>Workshop API Connect · Banco Provincia · 2026</span>
+    <span class="footer-ibm">IBM</span>
+  </footer>
+
+</body>
+</html>

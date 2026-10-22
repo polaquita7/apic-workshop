@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proveedores · API con seguridad oAuth y control de propiedad del recurso · IBM API Connect v12</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@300;400&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ibm-blue-60: #0F62FE; --ibm-blue-80: #002D9C; --ibm-navy: #001D6C;
+      --ibm-teal-50: #009D9A; --ibm-gray-10: #F4F4F4; --ibm-gray-20: #E0E0E0;
+      --ibm-gray-60: #6F6F6F; --ibm-gray-80: #393939; --ibm-white: #FFFFFF;
+      --ibm-black: #161616; --ibm-purple: #6929C4; --ibm-red: #DA1E28;
+      --ibm-green: #198038; --ibm-amber: #B4530A;
+    }
+    html { font-size: 15px; scroll-behavior: smooth; }
+    body { font-family: 'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif; font-weight: 300; color: var(--ibm-black); background: var(--ibm-gray-10); line-height: 1.55; min-height: 100vh; }
+
+    /* HERO */
+    .hero { background: var(--ibm-navy); color: var(--ibm-white); padding: 0 64px; min-height: 44vh; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--ibm-blue-60); }
+    .hero-grid { position: absolute; top: 0; right: 0; width: 45%; height: 100%; opacity: 0.04; background-image: repeating-linear-gradient(0deg,#fff 0,#fff 1px,transparent 1px,transparent 60px), repeating-linear-gradient(90deg,#fff 0,#fff 1px,transparent 1px,transparent 60px); }
+    .hero-accent { position: absolute; bottom: -120px; right: -120px; width: 380px; height: 380px; border-radius: 50%; border: 1px solid rgba(15,98,254,0.25); }
+    .hero-accent::after { content: ''; position: absolute; top: 40px; left: 40px; right: 40px; bottom: 40px; border-radius: 50%; border: 1px solid rgba(15,98,254,0.15); }
+    .hero-inner { position: relative; z-index: 2; max-width: 900px; padding: 60px 0 52px; }
+    .hero-eyebrow { font-size: 11px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+    .hero-eyebrow::before { content: ''; display: inline-block; width: 24px; height: 1px; background: var(--ibm-blue-60); }
+    .hero-badges { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .hero-badge { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 2px; }
+    .hero-badge-lab { background: var(--ibm-blue-60); color: #fff; }
+    .hero-badge-bloque { background: #393939; color: #fff; }
+    .hero-title { font-size: clamp(26px, 3.5vw, 46px); font-weight: 300; line-height: 1.1; max-width: 680px; margin-bottom: 8px; }
+    .hero-title em { font-style: normal; color: var(--ibm-blue-60); }
+    .hero-tagline { font-size: 14px; font-weight: 300; color: rgba(255,255,255,0.55); margin-top: 16px; max-width: 560px; line-height: 1.65; }
+    .hero-divider { width: 48px; height: 2px; background: var(--ibm-blue-60); margin: 28px 0; }
+    .hero-meta { display: flex; gap: 40px; flex-wrap: wrap; }
+    .meta-item { display: flex; flex-direction: column; gap: 4px; }
+    .meta-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.38); font-weight: 400; }
+    .meta-value { font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.85); }
+
+    /* CONTENT */
+    .content { max-width: 900px; margin: 0 auto; padding: 56px 32px 96px; }
+
+    /* SECTION LABEL */
+    .section-label { font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ibm-gray-60); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--ibm-gray-20); }
+
+    /* NN CALLOUT */
+    .nn-callout { background: var(--ibm-navy); color: var(--ibm-white); border-radius: 2px; padding: 22px 26px; margin-bottom: 48px; display: flex; gap: 18px; align-items: flex-start; }
+    .nn-icon { flex-shrink: 0; width: 38px; height: 38px; background: var(--ibm-blue-60); border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; font-family: 'IBM Plex Mono', monospace; color: #fff; }
+    .nn-body { flex: 1; }
+    .nn-body strong { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ibm-blue-60); margin-bottom: 8px; }
+    .nn-body p { font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.65; }
+    .nn-badge { display: inline-block; background: var(--ibm-blue-60); color: #fff; font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 1px 6px; border-radius: 2px; }
+    .nn-mono { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.85); }
+
+    /* TOC */
+    .toc { background: var(--ibm-white); border: 1px solid var(--ibm-gray-20); border-left: 4px solid var(--ibm-blue-60); border-radius: 2px; padding: 22px 26px; margin-bottom: 48px; }
+    .toc-title { font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ibm-gray-60); margin-bottom: 14px; }
+    .toc ol { padding-left: 18px; }
+    .toc li { margin-bottom: 5px; font-size: 13px; color: var(--ibm-gray-80); }
+    .toc ol ol { margin-top: 4px; }
+    .toc a { color: var(--ibm-blue-60); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+
+    /* SECTION HEADING */
+    h2.sec-heading { font-size: 20px; font-weight: 400; color: var(--ibm-black); margin-top: 48px; margin-bottom: 16px; padding: 4px 0 4px 14px; border-left: 4px solid var(--ibm-blue-60); border-bottom: none; }
+    h3.sub-heading { font-size: 14px; font-weight: 500; color: var(--ibm-black); margin-top: 24px; margin-bottom: 10px; }
+
+    /* STEP CARDS */
+    .step { background: var(--ibm-white); border: 1px solid var(--ibm-gray-20); border-radius: 2px; margin-bottom: 16px; overflow: hidden; }
+    .step-header { display: flex; align-items: center; gap: 14px; background: var(--ibm-gray-10); padding: 10px 18px; border-bottom: 1px solid var(--ibm-gray-20); }
+    .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--ibm-blue-60); color: #fff; font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'IBM Plex Mono', monospace; }
+    .step-header strong { font-size: 13px; font-weight: 500; color: var(--ibm-black); }
+    .step-body { padding: 16px 18px; }
+    .step-body p { font-size: 13px; color: var(--ibm-gray-80); margin-bottom: 10px; line-height: 1.6; }
+    .step-body p:last-child { margin-bottom: 0; }
+
+    /* CALLOUTS */
+    .callout { border-radius: 2px; padding: 12px 16px; margin: 12px 0; font-size: 13px; line-height: 1.6; }
+    .callout-info { background: #EDF5FF; border-left: 4px solid var(--ibm-blue-60); color: var(--ibm-gray-80); }
+    .callout-warn { background: #FFF8E1; border-left: 4px solid #F1C21B; color: var(--ibm-gray-80); }
+    .callout-ok   { background: #DEFBE6; border-left: 4px solid var(--ibm-green); color: var(--ibm-gray-80); }
+    .callout-err  { background: #FFF1F1; border-left: 4px solid var(--ibm-red); color: var(--ibm-gray-80); }
+    .callout strong { display: block; margin-bottom: 4px; font-weight: 500; }
+
+    /* CODE */
+    code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; background: #EDF5FF; color: var(--ibm-purple); padding: 1px 5px; border-radius: 2px; border: 1px solid #D0E2FF; }
+    pre { background: #161616; color: #f4f4f4; border-radius: 2px; padding: 18px 20px; overflow-x: auto; font-size: 12px; line-height: 1.75; margin: 12px 0; font-family: 'IBM Plex Mono', monospace; }
+    pre .k { color: #78a9ff; } pre .s { color: #42be65; } pre .c { color: #6f6f6f; } pre .n { color: #82cfff; } pre .v { color: #ffb784; }
+
+    /* TABLES */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+    th { background: var(--ibm-gray-10); text-align: left; padding: 8px 12px; border: 1px solid var(--ibm-gray-20); font-weight: 500; font-size: 12px; letter-spacing: 0.04em; color: var(--ibm-gray-80); }
+    td { padding: 8px 12px; border: 1px solid var(--ibm-gray-20); vertical-align: top; font-size: 13px; color: var(--ibm-gray-80); }
+    tr:nth-child(even) td { background: #fafafa; }
+
+    /* DIAGRAM */
+    .diagram { background: var(--ibm-white); border: 1px solid var(--ibm-gray-20); border-radius: 2px; padding: 20px; margin: 16px 0; overflow-x: auto; }
+
+    /* LISTS */
+    ul.plain { list-style: disc; padding-left: 20px; margin: 8px 0; }
+    ul.plain li { margin-bottom: 5px; font-size: 13px; color: var(--ibm-gray-80); line-height: 1.55; }
+
+    /* IMAGE PLACEHOLDER */
+    .img-placeholder { display: flex; align-items: center; gap: 10px; background: #FFF8E1; border: 2px dashed #F1C21B; border-radius: 2px; padding: 10px 14px; margin: 12px 0; font-size: 12px; font-weight: 500; color: var(--ibm-amber); letter-spacing: .03em; }
+    .img-placeholder::before { content: "▣"; font-size: 18px; color: #F1C21B; flex-shrink: 0; }
+
+    /* COPY BLOCK */
+    .pre-wrap { position: relative; margin: 12px 0; }
+    .pre-wrap pre { margin: 0; }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: transparent; border: 1px solid #4d4d4d; border-radius: 2px;
+      color: #c6c6c6; font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      padding: 3px 9px; cursor: pointer; line-height: 1.4; transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .copy-btn:hover { background: #333333; border-color: #78a9ff; color: #78a9ff; }
+    .copy-btn.copied { background: #0e3a1f; border-color: #42be65; color: #42be65; }
+
+    /* TOP NAV BAR */
+    .top-nav {
+      position: sticky; top: 0; left: 0; width: 100%; height: 48px;
+      background: var(--ibm-navy); border-bottom: 1px solid rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; z-index: 1000;
+    }
+    .top-nav-title {
+      font-size: 13px; font-weight: 400; color: #fff; display: flex; align-items: center; gap: 8px;
+    }
+    .top-nav-title strong { font-weight: 600; }
+    .top-nav-title span { color: rgba(255,255,255,0.5); }
+    .top-nav-actions { display: flex; align-items: center; gap: 12px; }
+    .btn-lab-setup {
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);
+      color: #fff; font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 500;
+      padding: 5px 12px; border-radius: 2px; cursor: pointer; display: flex; align-items: center; gap: 8px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .btn-lab-setup:hover {
+      background: rgba(255,255,255,0.2); border-color: var(--ibm-blue-60);
+    }
+    .btn-lab-setup .setup-badge {
+      background: var(--ibm-blue-60); color: #fff; font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px; padding: 1px 6px; border-radius: 2px;
+    }
+
+    /* MODAL LAB SETUP */
+    .modal-backdrop {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.65); backdrop-filter: blur(2px);
+      display: none; align-items: center; justify-content: center; z-index: 9999;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: var(--ibm-white); border-radius: 4px; box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+      width: 100%; max-width: 480px; padding: 28px; position: relative; animation: modalIn 0.2s ease-out;
+    }
+    @keyframes modalIn {
+      from { transform: translateY(-12px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-eyebrow {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ibm-blue-60); margin-bottom: 6px;
+    }
+    .modal-title {
+      font-size: 20px; font-weight: 400; color: var(--ibm-black); margin-bottom: 12px;
+    }
+    .modal-desc {
+      font-size: 13px; color: var(--ibm-gray-60); line-height: 1.5; margin-bottom: 20px;
+    }
+    .modal-close-btn {
+      position: absolute; top: 20px; right: 20px; background: transparent; border: none;
+      font-size: 18px; color: var(--ibm-gray-60); cursor: pointer; padding: 4px 8px; line-height: 1;
+    }
+    .modal-close-btn:hover { color: var(--ibm-black); }
+    .modal-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;
+    }
+    .modal-field { display: flex; flex-direction: column; gap: 6px; }
+    .modal-label {
+      font-size: 12px; font-weight: 500; color: var(--ibm-gray-80);
+    }
+    .modal-input {
+      font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500;
+      padding: 8px 12px; border: 1px solid var(--ibm-gray-20); border-radius: 2px;
+      outline: none; background: var(--ibm-gray-10); text-transform: uppercase;
+    }
+    .modal-input:focus {
+      border-color: var(--ibm-blue-60); background: #fff;
+    }
+    .modal-preview-card {
+      background: #EDF5FF; border: 1px solid #D0E2FF; border-radius: 2px;
+      padding: 12px 16px; margin-bottom: 20px;
+    }
+    .modal-preview-label {
+      font-size: 11px; font-weight: 500; text-transform: uppercase; color: var(--ibm-blue-80); margin-bottom: 4px;
+    }
+    .modal-preview-val {
+      font-family: 'IBM Plex Mono', monospace; font-size: 18px; font-weight: 600; color: var(--ibm-navy);
+    }
+    .modal-footer {
+      display: flex; justify-content: flex-end; gap: 12px;
+    }
+    .btn-secondary {
+      background: transparent; border: 1px solid var(--ibm-gray-20); color: var(--ibm-black);
+      padding: 8px 16px; font-size: 13px; font-weight: 400; border-radius: 2px; cursor: pointer;
+    }
+    .btn-secondary:hover { background: var(--ibm-gray-10); }
+    .btn-primary {
+      background: var(--ibm-blue-60); border: 1px solid var(--ibm-blue-60); color: #fff;
+      padding: 8px 20px; font-size: 13px; font-weight: 500; border-radius: 2px; cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--ibm-blue-80); }
+
+    /* FOOTER */
+    .page-footer { border-top: 1px solid var(--ibm-gray-20); padding: 20px 32px; max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--ibm-gray-60); }
+    .footer-ibm { font-weight: 500; letter-spacing: 0.06em; }
+
+    /* BACK TO TOP */
+    #btn-back-top {
+      position: fixed; bottom: 28px; right: 28px;
+      width: 40px; height: 40px;
+      background: var(--ibm-blue-60); color: #fff;
+      border: none; border-radius: 50%;
+      font-size: 18px; line-height: 1; cursor: pointer;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 900;
+    }
+    #btn-back-top.visible { opacity: 1; pointer-events: auto; }
+    #btn-back-top:hover { background: var(--ibm-blue-80); }
+
+    @media (max-width: 720px) {
+      .hero { padding: 0 28px; }
+      .hero-meta { gap: 24px; }
+      .content { padding: 40px 20px 64px; }
+      .modal-grid { grid-template-columns: 1fr; }
+      .top-nav { padding: 0 16px; }
+    }
+  </style>
+  <!-- Valores de ambiente — fuente canónica: laboratorios/datos-ambiente.js -->
+  <script src="../../datos-ambiente.js"></script>
+</head>
+<body>
+
+<!-- TOP NAV BAR -->
+<nav class="top-nav">
+  <div class="top-nav-title">
+    <strong>API Connect</strong> <span>| <a href="../../Landing_Labs_APIC_BancoProvincia.html#index-proveedores" style="color:rgba(255,255,255,0.7);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">Experiencia de Proveedores</a></span>
+  </div>
+  <div class="top-nav-actions">
+    <button type="button" class="btn-lab-setup" id="btn-open-setup" onclick="openLabSetupModal()">
+      <span>Lab setup</span>
+      <span class="setup-badge" id="nav-setup-badge">demo01</span>
+    </button>
+  </div>
+</nav>
+
+<!-- MODAL LAB SETUP -->
+<div class="modal-backdrop" id="modal-setup" onclick="handleBackdropClick(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button type="button" class="modal-close-btn" onclick="closeLabSetupModal()">✕</button>
+    <div class="modal-eyebrow">Personalizar este laboratorio</div>
+    <h2 class="modal-title">Lab setup</h2>
+    <p class="modal-desc">
+      Ingresá la abreviatura de 4 letras de tu nombre y el número de ambiente de 2 dígitos asignado para personalizar todos los recursos, nombres y comandos del lab.
+    </p>
+
+    <div class="modal-grid">
+      <div class="modal-field">
+        <label class="modal-label" for="setup-abbr">Abreviatura (4 letras)</label>
+        <input type="text" id="setup-abbr" class="modal-input" maxlength="4" placeholder="CECI" oninput="updateSetupPreview()" autocomplete="off" />
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="setup-num">Número de ambiente (2 dígitos)</label>
+        <input type="text" id="setup-num" class="modal-input" maxlength="2" placeholder="01" oninput="updateSetupPreview()" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="modal-preview-card">
+      <div class="modal-preview-label">Tu identificador de recursos (ID prefix)</div>
+      <div class="modal-preview-val" id="setup-preview">ceci01</div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" onclick="closeLabSetupModal()">Cancelar</button>
+      <button type="button" class="btn-primary" onclick="saveLabSetup()">Guardar setup</button>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-accent"></div>
+  <div class="hero-inner">
+    <p class="hero-eyebrow">IBM · Banco Provincia · 2026</p>
+    <div class="hero-badges">
+      <span class="hero-badge hero-badge-lab">Laboratorio Práctico</span>
+      <span class="hero-badge hero-badge-bloque">Experiencia Proveedores</span>
+    </div>
+    <h1 class="hero-title">Control de Autorización<br>a Nivel de Objeto en <em>API Connect v12</em></h1>
+    <p class="hero-tagline">
+      Implementación de control de Autorización a Nivel de Objeto con el OAuth Provider nativo de APIC v12,
+      flujo ROPC y validación del <code style="color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2)">cuit</code>.
+    </p>
+    <div class="hero-divider"></div>
+    <div class="hero-meta">
+      <div class="meta-item"><span class="meta-label">Plataforma</span><span class="meta-value">IBM API Connect v12 sobre OpenShift</span></div>
+      <div class="meta-item"><span class="meta-label">Gateway</span><span class="meta-value">DataPower API Gateway</span></div>
+      <div class="meta-item"><span class="meta-label">Perspectiva</span><span class="meta-value">Desarrollador de APIs — Diseño y publicación</span></div>
+      <div class="meta-item"><span class="meta-label">Duración</span><span class="meta-value">~20 min</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT -->
+<main class="content">
+
+  <!-- NN CALLOUT -->
+  <div class="nn-callout">
+    <div class="nn-icon" id="callout-env-icon">ID</div>
+    <div class="nn-body">
+      <strong>Tu identificador de laboratorio</strong>
+      <p>
+        Para evitar colisiones de nombres con los demás participantes en el ambiente APIC compartido, este lab utiliza tu identificador personalizado
+        <span class="nn-badge" id="callout-env-badge">ceci01</span> (4 letras de tu nombre + 2 dígitos de ambiente). Podés cambiarlo en cualquier momento desde el botón <button type="button" onclick="openLabSetupModal()" style="background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;border-radius:2px;padding:1px 6px;cursor:pointer;font-size:11px;font-family:'IBM Plex Sans',sans-serif;">Lab setup</button> en la barra superior.
+      </p>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <p class="toc-title">Contenido</p>
+    <ol>
+      <li><a href="#sec-conceptos">Contexto: Qué es Broken Object Level Authorization</a></li>
+      <li><a href="#sec-parte1">Parte 1 — OAuth Provider nativo</a>
+        <ol style="margin-top:4px">
+          <li><a href="#sec-user-registry">Paso 1 — Crear el User Registry</a></li>
+          <li><a href="#sec-catalog-registry">Paso 2 — Asociar el User Registry al Catálogo</a></li>
+          <li><a href="#sec-oauth-provider">Paso 3 — Crear el OAuth Provider nativo</a></li>
+          <li><a href="#sec-metadata">Paso 4 — Configurar el claim custom</a></li>
+          <li><a href="#sec-catalog-oauth">Paso 5 — Asociar el OAuth Provider al Catálogo</a></li>
+        </ol>
+      </li>
+      <li><a href="#sec-parte2">Parte 2 — Creación de una API con control BOLA</a>
+        <ol style="margin-top:4px">
+          <li><a href="#sec-api-create">Paso 6 — Crear la API en el API Studio</a></li>
+          <li><a href="#sec-api-path">Paso 7 — Editar la API</a></li>
+          <li><a href="#sec-api-assembly">Paso 8 — Assembly: la lógica en el gateway</a></li>
+          <li><a href="#sec-api-security">Paso 9 — Configurar el Security Scheme OAuth2</a></li>
+          <li><a href="#sec-api-publish">Paso 10 — Crear el Plan y Producto</a></li>
+          <li><a href="#sec-api-deploy">Paso 11 — Publicar la API</a></li>
+        </ol>
+      </li>
+      <li><a href="#sec-test">Parte 3 — Verificación</a></li>
+      <li><a href="#sec-cierre">¿Qué resolvió API Connect?</a></li>
+      <li><a href="#sec-troubleshooting">Troubleshooting</a></li>
+    </ol>
+  </div>
+
+  <!-- SECCIÓN 1 — CONCEPTOS -->
+  <h2 class="sec-heading" id="sec-conceptos">1. Contexto: Qué es Broken Object Level Authorization</h2>
+  <p style="font-size:13px;color:var(--ibm-gray-80);margin-bottom:12px">En la API de saldos que construímos, se expone el CUIT de la empresa como parámetro de ruta:</p>
+  <pre>GET /saldos/<span class="v">30716595549</span>/obtenersaldo</pre>
+  <p style="font-size:13px;color:var(--ibm-gray-80);margin-bottom:12px">El CUIT es un dato <strong>descifrable y predecible</strong>. Sin un control de autorización, cualquier cliente autenticado podría consultar el saldo de <em>cualquier</em> empresa simplemente cambiando el CUIT en la URL. Esta vulnerabilidad se conoce como <strong>BOLA (Broken Object Level Authorization)</strong>: el sistema autentica quién sos, pero no verifica si el recurso que pedís te pertenece.</p>
+
+  <div class="callout callout-warn">
+    <strong>Antes de este lab</strong>
+    Nuestra API es vulnerable <code>GET /saldos/30500010237/obtenersaldo</code> devuelve los datos de Agropecuaria Pampeana aunque el token pertenezca a Constructora del Sur. El backend confía en cualquier llamada que llegue.
+  </div>
+
+  <h3 class="sub-heading">La solución: el control pertenece al gateway, no al backend</h3>
+  
+  <div class="diagram">
+    <svg viewBox="0 0 700 340" width="100%" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10"  y="10" width="110" height="36" rx="3" fill="#EDF5FF" stroke="#0F62FE" stroke-width="1.5"/>
+      <text x="65"  y="33" text-anchor="middle" font-size="12" fill="#161616" font-weight="500" font-family="IBM Plex Sans,sans-serif">App / Cliente</text>
+      <rect x="260" y="10" width="150" height="36" rx="3" fill="#F6F2FF" stroke="#6929C4" stroke-width="1.5"/>
+      <text x="335" y="25" text-anchor="middle" font-size="11" fill="#161616" font-weight="500" font-family="IBM Plex Sans,sans-serif">APIC OAuth Provider</text>
+      <text x="335" y="40" text-anchor="middle" font-size="10" fill="#6F6F6F" font-family="IBM Plex Sans,sans-serif">emite token con resource_owner</text>
+      <rect x="550" y="10" width="140" height="36" rx="3" fill="#DEFBE6" stroke="#198038" stroke-width="1.5"/>
+      <text x="620" y="25" text-anchor="middle" font-size="11" fill="#161616" font-weight="500" font-family="IBM Plex Sans,sans-serif">Assembly Gateway</text>
+      <text x="620" y="40" text-anchor="middle" font-size="10" fill="#6F6F6F" font-family="IBM Plex Sans,sans-serif">lógica control resource_owner</text>
+      <line x1="65"  y1="46" x2="65"  y2="330" stroke="#E0E0E0" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <line x1="335" y1="46" x2="335" y2="330" stroke="#E0E0E0" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <line x1="620" y1="46" x2="620" y2="330" stroke="#E0E0E0" stroke-width="1.2" stroke-dasharray="4,3"/>
+      <line x1="65" y1="80" x2="325" y2="80" stroke="#0F62FE" stroke-width="1.5" marker-end="url(#a1)"/>
+      <text x="195" y="73" text-anchor="middle" font-size="11" fill="#6F6F6F" font-family="IBM Plex Sans,sans-serif">POST /oauth2/token (username, password, scope)</text>
+      <line x1="335" y1="108" x2="75" y2="108" stroke="#6929C4" stroke-width="1.5" marker-end="url(#a2)"/>
+      <text x="195" y="102" text-anchor="middle" font-size="11" fill="#6F6F6F" font-family="IBM Plex Sans,sans-serif">token con resource_owner: "30716595549"</text>
+      <line x1="65" y1="155" x2="610" y2="155" stroke="#198038" stroke-width="1.5" marker-end="url(#a3)"/>
+      <text x="340" y="148" text-anchor="middle" font-size="10" fill="#6F6F6F" font-family="IBM Plex Sans,sans-serif">GET /saldos/30716595549/obtenersaldo  Authorization: Bearer …</text>
+      <line x1="620" y1="183" x2="75" y2="183" stroke="#198038" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#a3)"/>
+      <text x="340" y="200" text-anchor="middle" font-size="11" fill="#198038" font-family="IBM Plex Sans,sans-serif">200 OK — CUIT del token coincide con el path</text>
+      <line x1="65" y1="240" x2="610" y2="240" stroke="#DA1E28" stroke-width="1.5" marker-end="url(#a4)"/>
+      <text x="340" y="233" text-anchor="middle" font-size="10" fill="#6F6F6F" font-family="IBM Plex Sans,sans-serif">GET /saldos/30500010237/obtenersaldo  (token de otra empresa)</text>
+      <line x1="620" y1="268" x2="75" y2="268" stroke="#DA1E28" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#a4)"/>
+      <text x="340" y="286" text-anchor="middle" font-size="11" fill="#DA1E28" font-family="IBM Plex Sans,sans-serif">403 Forbidden — CUIT del token NO coincide con el path</text>
+      <defs>
+        <marker id="a1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#0F62FE"/></marker>
+        <marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6929C4"/></marker>
+        <marker id="a3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#198038"/></marker>
+        <marker id="a4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#DA1E28"/></marker>
+      </defs>
+    </svg>
+  </div>
+
+  <!-- PREREQ -->
+  <!-- PARTE 1 -->
+  <h2 class="sec-heading" id="sec-parte1">Parte 1 — OAuth Provider nativo</h2>
+
+  <div class="callout callout-warn">
+    <strong>Demostración guiada por el instructor</strong>
+    Debido a la cantidad de participantes en el workshop, toda la Parte 1 será mostrada paso a paso por el instructor, pero no ejecutada de manera individual. Todos los participantes del workshop compartirán el mismo registry de usuarios y OAuth Provider nativo de API Connect y podrán ir siguiendo los pasos con esta guía.
+  </div>
+
+  <p class="section-label" style="margin-top:8px">Paso 1 — Crear el User Registry</p>
+  <p id="sec-user-registry" style="font-size:13px;color:var(--ibm-gray-80);margin-bottom:14px">El User Registry le indica a APIC cómo validar las credenciales del usuario. Vamos a utilizar el tipo <strong>Authentication URL</strong>, que delega la validación al endpoint <code>/auth</code> del backend.</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">1</div><strong>Ir a Resources → User Registries</strong></div>
+    <div class="step-body"><p>En el <strong>API Manager</strong>, seleccioná tu organización de API. En el menú lateral hacé clic en <strong>Resources → User Registries</strong> y luego en el botón <strong>Create</strong>.</p><img src="assets/images/01-resources-user-registry.png" alt="Menú lateral con Resources → User Registries resaltado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" /></div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">2</div><strong>Crear un nuevo User Registry de tipo Authentication URL</strong></div>
+    <div class="step-body"><p>Seleccioná el tipo <strong>Authentication URL</strong>.</p><img src="assets/images/02-authentication-url.png" alt="Modal de selección de tipo de User Registry con Authentication URL resaltado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" /></div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">3</div><strong>Completar el formulario y guardar</strong></div>
+    <div class="step-body">
+        <p>Completá el formulario que aparece en pantalla con los siguientes valores.</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Title</td><td><code class="dyn-val" data-prefix="saldos-user-registry-">saldos-user-registry-ceci01</code></td></tr>
+        <tr><td>Name</td><td>se completa automático: <code class="dyn-val" data-prefix="saldos-user-registry-">saldos-user-registry-ceci01</code></td></tr>
+        <tr><td>URL</td><td><code id="cfg-mock-auth-url"></code></td></tr>
+      </table>
+      <img src="assets/images/03-user-registry-configuration.png" alt="Formulario del User Registry completado con la URL pública" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Hacé clic en <strong>Save</strong>.</p>
+      <div class="callout callout-info"><strong>Cómo funciona la autenticación</strong> API Connect envía las credenciales como <strong>HTTP Basic Auth</strong> al endpoint <code>/auth</code> del backend. El mismo responde con <code>{"authenticated": true, "cuit": "30716595549"}</code> si las credenciales son válidas.</div>
+    </div>
+  </div>
+
+  <p class="section-label" id="sec-catalog-registry" style="margin-top:32px">Paso 2 — Asociar el User Registry al Catálogo</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">4</div><strong>Ir a Catalog Settings → API User Registries</strong></div>
+    <div class="step-body">
+      <p>En el API Manager, ir a <strong>Manage → <code id="cfg-apic-catalog"></code></strong>.</p>
+      <img src="assets/images/04a-manage-catalog.png" alt="API Manager — menú Manage con el catálogo resaltado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Ir a <strong>Catalog Settings → API User Registries</strong> y hacer clic en <strong>Edit</strong>.</p>
+      <img src="assets/images/04b-catalog-settings.png" alt="Catalog Settings con la opción API User Registries resaltada" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Tildá <code class="dyn-val" data-prefix="saldos-user-registry-">saldos-user-registry-ceci01</code> y hacé clic en <strong>Save</strong>.</p>
+      <img src="assets/images/04c-edit-user-registries.png" alt="Modal de edición de User Registries con saldos-user-registry-nn tildado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Deberás ver el mensaje de confirmación en la esquina superior derecha.</p>
+      <img src="assets/images/04d-user-registry-added.png" alt="Mensaje de confirmación de User Registry agregado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+
+  <p class="section-label" id="sec-oauth-provider" style="margin-top:32px">Paso 3 — Crear el OAuth Provider nativo</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">5</div><strong>Ir a Resources → OAuth Providers → Add → Native OAuth Provider</strong></div>
+    <div class="step-body"><p>En el menú lateral hacé clic en <strong>Resources → OAuth Providers → Add → Native OAuth Provider</strong>.</p><img src="assets/images/05-add-native-oauth-provider.png" alt="Menú Add con Native OAuth Provider resaltado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" /></div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">6</div><strong>Completar la pantalla Info</strong></div>
+    <div class="step-body">
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Title</td><td><code id="cfg-oauth-title">saldos-oauth-ceci01</code></td></tr>
+        <tr><td>Name</td><td>se completa automático: <code id="cfg-oauth-name">saldos-oauth-ceci01</code></td></tr>
+        <tr><td>Base Path</td><td><code id="cfg-oauth-basepath">/saldos-oauth-ceci01</code></td></tr>
+        <tr><td>Gateway type</td><td><code>DataPower API Gateway</code></td></tr>
+      </table>
+      <p>Hacé clic en <strong>Next</strong>.</p><img src="assets/images/06-oauth-info.png" alt="Primera pantalla del wizard de OAuth Provider completada" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">7</div><strong>Configuración del oAuth Provider — Grant Types y Scopes
+    </strong></div>
+    <div class="step-body">
+      <p>En <strong>Grant Types</strong> — habilitar únicamente: <strong>Resource owner — Password</strong></p>
+      <img src="assets/images/07-oauth-config.png" alt="Pantalla Configuration con ROPC-Password habilitado, scope saldos:read y Confidential seleccionado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p style="margin-top:10px">En <strong>Scopes</strong> — eliminá el scope de ejemplo con el ícono del tacho de basura y presioná el botón superior <strong>Add</strong> para agregar un nuevo scope con los siguientes valores:</p>
+      <table><tr><th>Scope</th><th>Descripción</th></tr><tr><td><code>saldos:read</code></td><td>Permite consultar el saldo de la cuenta propia</td></tr></table>
+      <img src="assets/images/07b-oauth-scope.png" alt="Sección Scopes con saldos:read agregado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+     <p>Hacé clic en <strong>Next</strong>.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">8</div><strong>Seleccionar el User Registry para autenticación</strong></div>
+    <div class="step-body"><p>En el desplegable <strong>"Authenticate application users using"</strong>, seleccioná <code class="dyn-val" data-prefix="saldos-user-registry-">saldos-user-registry-ceci01</code>.</p><img src="assets/images/08-oauth-user-registry.png" alt="Desplegable de autenticación con saldos-user-registry seleccionado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" /><p>Hacé clic en <strong>Next</strong> → revisá el resumen → hacé clic en <strong>Finish</strong>.</p></div>
+  </div>
+
+  <p class="section-label" id="sec-metadata" style="margin-top:32px">Paso 4 — Configurar el claim custom</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">9</div><strong>Edición del oAuth Provider</strong></div>
+    <div class="step-body"><p>Una vez creado el OAuth Provider, se abre automáticamente para edición. Habilitá la opción <strong>Enable debug response headers</strong> y hacé clic en <strong>Save</strong>.</p><img src="assets/images/09-oauth-saved.png" alt="Menú lateral del OAuth Provider: Info, Configuration, Scopes, User security, Tokens, Metadata…" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" /></div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">10</div><strong>Verificar la configuración de la metadata</strong></div>
+    <div class="step-body">
+      <p>En el menú lateral izquierdo hacé clic en <strong>Metadata</strong>. Verificá que los valores sean exactamente estos:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor esperado</th></tr>
+        <tr><td>Collect metadata</td><td>✅ marcado</td></tr>
+        <tr><td>Source → Authentication URL</td><td>✅ marcado</td></tr>
+        <tr><td>Source → External URL</td><td>☐ desmarcado</td></tr>
+        <tr><td>Header name token</td><td><code>X-API-OAUTH-METADATA-FOR-ACCESSTOKEN</code></td></tr>
+        <tr><td>Header name payload</td><td><code>X-API-OAUTH-METADATA-FOR-PAYLOAD</code></td></tr>
+      </table>
+      <div class="callout callout-ok"><strong>¿Cómo llega el claim <code>cuit</code> al token?</strong> Al marcar <strong>Authentication URL</strong> como source, IBM API Connect lee toda la respuesta JSON del endpoint <code>/auth</code> — incluyendo el campo <code>cuit</code> — y la inyecta automáticamente en el payload del token. Esto evita tener que hacer un mapeo manual.</div>
+      <img src="assets/images/10-oauth-metadata.png" alt="Sección Metadata con Collect metadata y Authentication URL marcados" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Hacé clic en <strong>Save</strong>.</p>
+    </div>
+  </div>
+
+  <p class="section-label" id="sec-catalog-oauth" style="margin-top:32px">Paso 5 — Asociar el OAuth Provider al Catálogo</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">11</div><strong>Acceder a la configuración del catálogo</strong></div>
+    <div class="step-body">
+      <p>En el API Manager, ir a <strong>Manage → <code id="cfg-apic-catalog-oauth"></code></strong>.</p>
+      <img src="assets/images/11a-catalog-settings.png" alt="API Manager — menú Manage con el catálogo resaltado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">12</div><strong>Editar OAuth Providers</strong></div>
+    <div class="step-body">
+      <p>Ir a <strong>Catalog Settings → OAuth Providers</strong> y hacer clic en <strong>Edit</strong>.</p>
+      <img src="assets/images/12-edit-oauth-provider.png" alt="Catalog Settings → OAuth Providers con botón Edit resaltado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">13</div><strong>Seleccionar el OAuth Provider y guardar</strong></div>
+    <div class="step-body">
+      <p>Seleccioná <code id="cfg-oauth-name-catalog">saldos-oauth-ceci01</code> y hacé clic en <strong>Save</strong>.</p>
+      <img src="assets/images/13-select-oauth-provider.png" alt="Modal de selección de OAuth Provider con el provider tildado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <div class="callout callout-ok">Una vez asociado, el gateway expone automáticamente el token endpoint en:<br><code>https://{gw-host}/{org}/{catalog}/{oAuth-provider-name}/oauth2/token</code></div>
+    </div>
+  </div>
+
+  <!-- PARTE 2 -->
+  <h2 class="sec-heading" id="sec-parte2">Parte 2 — Creación de una API con control BOLA</h2>
+
+  <p class="section-label" id="sec-api-create" style="margin-top:8px">Paso 6 — Crear la API en el API Studio</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">14</div><strong>Acceder al API Studio</strong></div>
+    <div class="step-body">
+      <p>En el API Manager, ir a <strong>Develop</strong>. Luego, hacé clic en <strong>New API Project → Create a new project</strong>.</p>
+      <img src="assets/images/14a-api-studio.png" alt="API Studio con la pantalla Quick Start del proyecto" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Completá <strong>Project name</strong> con <code class="dyn-val" data-prefix="saldos-">saldos-ceci01</code> y hacé clic en <strong>Create</strong>.</p>
+      <img src="assets/images/14b-new-project.png" alt="Modal de nuevo proyecto con saldos-nn como nombre" style="max-width:50%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">15</div><strong>Agregar una nueva API REST desde cero</strong></div>
+    <div class="step-body">
+      <p>Hacé clic en <strong>Add an API</strong>.</p>
+      <img src="assets/images/15a-add-api.png" alt="Pantalla del API Studio con el botón Add an API resaltado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Hacé clic en <strong>REST</strong>.</p>
+      <img src="assets/images/15b-rest-api.png" alt="Selección del tipo REST" style="max-width:50%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Hacé clic en <strong>From scratch</strong> y completá:</p>
+      <img src="assets/images/15c-from-scratch.png" alt="Opción From scratch seleccionada" style="max-width:50%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Completá con los siguientes valores:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>API Name</td><td><code class="dyn-val" data-prefix="saldos-">saldos-ceci01</code></td></tr>
+        <tr><td>Namespace</td><td>el nombre de tu proyecto creado en el paso anterior (<code class="dyn-val" data-prefix="saldos-">saldos-ceci01</code>)</td></tr>
+        <tr><td>API version</td><td><code>1.0.0</code></td></tr>
+        <tr><td>API specification version</td><td><code>3.0.4</code> (valor por defecto — no modificar)</td></tr>
+      </table>
+      <img src="assets/images/15d-api-details.png" alt="Modal Create a REST API — From scratch completado" style="max-width:50%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Hacé clic en <strong>Create</strong>.</p>
+    </div>
+  </div>
+
+  <p class="section-label" id="sec-api-path" style="margin-top:32px">Paso 7 — Editar la API</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">16</div><strong>API General Information</strong></div>
+    <div class="step-body">
+      <p>Completá los datos de la sección <strong>General Information</strong>.</p>
+      <img src="assets/images/16-api-general-info.png" alt="Pantalla General Information de la API completada" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">17</div><strong>Agregar el path</strong></div>
+    <div class="step-body">
+      <p>En el Outline, ir a <strong>Paths and Operations → Add Path</strong>.</p>
+      <img src="assets/images/17a-add-path.png" alt="Outline con la opción Add Path resaltada" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Completar con los valores de esta tabla:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Path</td><td><code class="dyn-val" data-prefix="/saldos" data-suffix="/{cuit}/obtenersaldo">/saldosceci01/{cuit}/obtenersaldo</code></td></tr>
+        <tr><td>Supported Operations</td><td>✅ <strong>GET</strong> únicamente</td></tr>
+      </table>
+      <p>Y hacé clic en <strong>Add</strong>.</p>
+      <img src="assets/images/17b-path-details.png" alt="Modal Add path con /saldos/{cuit}/obtenersaldo y GET marcado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">18</div><strong>Definir el parámetro <code>cuit</code></strong></div>
+    <div class="step-body">
+      <p>Hacé clic sobre el path <code class="dyn-val" data-prefix="/saldos" data-suffix="/{cuit}/obtenersaldo">/saldosceci01/{cuit}/obtenersaldo</code> para editarlo.</p>
+      <img src="assets/images/18a-enter-path.png" alt="Path /saldos-nn/{cuit}/obtenersaldo seleccionado para edición" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>En la sección <strong>Operation Parameters</strong>, hacé clic en <strong>Add Parameter → Add a new parameter</strong>.</p>
+      <img src="assets/images/18b-add-parameter.png" alt="Sección Path Parameters con la opción Add a new parameter resaltada" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>En la sección <strong>Parameter information</strong>, completá los campos y hacé clic en <strong>Next</strong>:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Parameter name</td><td><code>cuit</code></td></tr>
+        <tr><td>Located in</td><td><code>path</code></td></tr>
+        <tr><td>Description</td><td><code>CUIT de la empresa titular de la cuenta</code></td></tr>
+        <tr><td>Required</td><td>✅ marcado</td></tr>
+      </table>
+      <img src="assets/images/18c-parameter-info.png" alt="Sección Parameter information completada" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>En la sección <strong>Content/Schema</strong>, completá los campos y hacé clic en <strong>Next</strong>:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Content type (and schema)</td><td>✅ marcado</td></tr>
+        <tr><td>Content type</td><td><code>application/json</code></td></tr>
+        <tr><td>Inline schema</td><td><code>type: string</code></td></tr>
+      </table>
+      <img src="assets/images/18d-parameter-schema.png" alt="Sección Content/Schema con application/json y type:string completados" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>En la sección <strong>Examples</strong>, completá los campos y hacé clic en <strong>Update</strong>:</p>
+      <table>
+        <tr><td>Single example</td><td>✅ marcado</td></tr>
+        <tr><td>Example type</td><td><strong>Single Example</strong></td></tr>
+        <tr><td>Inline example</td><td><code id="cfg-cuit-propio-param"></code></td></tr>
+      </table>
+      <img src="assets/images/18e-parameter-examples.png" alt="Sección Examples con Single Example y el CUIT de ejemplo completado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">19</div><strong>Agregar los Responses</strong></div>
+    <div class="step-body">
+      <p>Dentro de la sección Responses, hacer clic en <strong>Add response</strong>.</p>
+      <img src="assets/images/19a-add-response.png" alt="Sección Responses con el botón Add response resaltado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Agregar uno a uno los siguientes status code:</p>
+      <table>
+        <tr><th>Status code</th><th>Description</th></tr>
+        <tr><td><code>200</code></td><td>Saldo de la cuenta</td></tr>
+        <tr><td><code>401</code></td><td>Token no provisto o inválido</td></tr>
+        <tr><td><code>403</code></td><td>CUIT del token no coincide con el CUIT solicitado</td></tr>
+      </table>
+      <img src="assets/images/19b-response-200.png" alt="Detalle del response 200" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <img src="assets/images/19c-responses-created.png" alt="Los tres responses definidos en la operación GET" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">20</div><strong>Editar response 200</strong></div>
+    <div class="step-body">
+      <p>Hacer clic sobre <code>200</code>. <strong>Content type</strong> hacer clic sobre <strong>Add Content Type</strong>. </p>
+      <img src="assets/images/20a-add-content-type.png" alt="Sección del response 200 con el botón Add Content Type resaltado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>En <strong>Content type</strong>, completá con <code>application/json</code>.</p>
+      <p>En <strong>Schema</strong>, pegá el siguiente bloque:</p>
+      <div class="pre-wrap">
+        <button class="copy-btn" aria-label="Copiar schema">Copiar</button>
+        <pre>
+{
+  <span class="k">"type"</span>: <span class="s">"object"</span>,
+  <span class="k">"properties"</span>: {
+    <span class="k">"cuit"</span>:    { <span class="k">"type"</span>: <span class="s">"string"</span> },
+    <span class="k">"titular"</span>: { <span class="k">"type"</span>: <span class="s">"string"</span> },
+    <span class="k">"saldo"</span>:   { <span class="k">"type"</span>: <span class="s">"number"</span> },
+    <span class="k">"moneda"</span>:  { <span class="k">"type"</span>: <span class="s">"string"</span> }
+  }
+}</pre>
+      </div>
+      <p>En <strong>Example</strong>, pegá el siguiente bloque:</p>
+      <div class="pre-wrap">
+        <button class="copy-btn" aria-label="Copiar example">Copiar</button>
+        <pre>
+{
+  <span class="k">"cuit"</span>:    <span class="s">"30716595549"</span>,
+  <span class="k">"titular"</span>: <span class="s">"Constructora del Sur S.A."</span>,
+  <span class="k">"saldo"</span>:   <span class="n">4250000</span>,
+  <span class="k">"moneda"</span>:  <span class="s">"ARS"</span>
+}</pre>
+      </div>
+      <img src="assets/images/20b-content-type-details.png" alt="Schema del response 200 configurado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Hacé clic en <strong>Add</strong> para guardar.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header"><div class="step-num">21</div><strong>Editar response 401</strong></div>
+    <div class="step-body">
+      <p>Hacé clic sobre el response <code>401</code> y agregá content type <code>application/json</code> con el siguiente schema:</p>
+      <div class="pre-wrap">
+        <button class="copy-btn" aria-label="Copiar schema">Copiar</button>
+        <pre>
+{
+  <span class="k">"type"</span>: <span class="s">"object"</span>,
+  <span class="k">"properties"</span>: {
+    <span class="k">"httpCode"</span>:        { <span class="k">"type"</span>: <span class="s">"string"</span> },
+    <span class="k">"httpMessage"</span>:     { <span class="k">"type"</span>: <span class="s">"string"</span> },
+    <span class="k">"moreInformation"</span>: { <span class="k">"type"</span>: <span class="s">"string"</span> }
+  }
+}</pre>
+      </div>
+      <img src="assets/images/21-schema-401.png" alt="Schema del response 401 configurado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Hacé clic en <strong>Add</strong> para guardar.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">22</div><strong>Editar response 403</strong></div>
+    <div class="step-body">
+      <p>Hacé clic sobre el response <code>403</code> y agregá content type <code>application/json</code> con el siguiente schema:</p>
+      <div class="pre-wrap">
+        <button class="copy-btn" aria-label="Copiar schema">Copiar</button>
+        <pre>
+{
+  <span class="k">"type"</span>: <span class="s">"object"</span>,
+  <span class="k">"properties"</span>: {
+    <span class="k">"httpCode"</span>:        { <span class="k">"type"</span>: <span class="s">"string"</span> },
+    <span class="k">"httpMessage"</span>:     { <span class="k">"type"</span>: <span class="s">"string"</span> },
+    <span class="k">"moreInformation"</span>: { <span class="k">"type"</span>: <span class="s">"string"</span> }
+  }
+}</pre>
+      </div>
+      <img src="assets/images/22-schema-403.png" alt="Schema del response 403 configurado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Hacé clic en <strong>Add</strong> para guardar.</p>
+    </div>
+  </div>
+
+  <p class="section-label" id="sec-api-assembly" style="margin-top:32px">Paso 8 — Assembly: la lógica en el gateway</p>
+  <div class="callout callout-info">
+    <strong>Variables de contexto disponibles en el Assembly</strong>
+    <ul class="plain" style="margin-top:4px">
+      <li><code>$(oauth.verified_access_token.resource_owner)</code> — el CUIT del usuario autenticado.</li>
+      <li><code>$(request.parameters.cuit)</code> — el CUIT enviado como path parameter. En DataPower los path parameters se acceden via <code>request.parameters</code>.</li>
+    </ul>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">23</div><strong>Crear la Policy Sequence</strong></div>
+    <div class="step-body">
+      <p>En el Explorer, hacer clic en <strong>+ junto a Policy sequences → Add Policy Sequence</strong> y completar:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Select Gateway</td><td><code>DataPower API Gateway</code></td></tr>
+        <tr><td>Policy Sequence Name</td><td><code class="dyn-val" data-prefix="saldos-" data-suffix="-ps">saldos-ceci01-ps</code></td></tr>
+        <tr><td>API</td><td><code class="dyn-val" data-prefix="saldos-">saldos-ceci01</code></td></tr>
+      </table>
+      <img src="assets/images/23-add-policy-sequence.png" alt="Modal Add Policy Sequence completado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">24</div><strong>Set Variable — extraer ambos CUITs</strong></div>
+    <div class="step-body">
+      <p>Hacer clic en <strong>+</strong> antes del <code>invoke</code> y agregar una política <strong>Set Variable</strong>.</p>
+      <img src="assets/images/24a-add-set-variable.png" alt="Canvas del Assembly con la política Set Variable agregada antes del invoke" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+
+      <p>Hacer clic sobre la política <strong>set variable</strong> que se agregó a la secuencia y modificar los siguientes valores:</p>
+      <table>
+        <tr><th>Action</th><th>Set (nombre)</th><th>Type</th><th>Value</th></tr>
+        <tr><td>Set</td><td><code>jwt_cuit</code></td><td><code>string</code></td><td><code>$(oauth.verified_access_token.resource_owner)</code></td></tr>
+        <tr><td>Add action → Set</td><td><code>req_cuit</code></td><td><code>string</code></td><td><code>$(request.parameters.cuit)</code></td></tr>
+      </table>
+      <!--Usar guiones bajos, no guiones medios. Los nombres de variables deben usar <strong>guiones bajos</strong> (<code>jwt_cuit</code>, <code>req_cuit</code>). El guión medio causa un error aritmético en JSONata.-->
+ <img src="assets/images/24c-actions.png" alt="Política Set Variable con las dos acciones jwt_cuit y req_cuit configuradas" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">25</div><strong>Switch — comparación de los CUIT</strong></div>
+    <div class="step-body">
+      <p>Hacé clic en el <strong>+</strong> que está después del Set Variable y antes del <code>invoke</code>. Agregar una política <strong>Switch</strong></p>
+      <div class="callout callout-info">El Case 0 se ejecuta cuando la condición es verdadera. El flujo que no matchea continúa hacia el <code>invoke</code>.</div>
+      <img src="assets/images/25a-add-switch.png" alt="Canvas del Assembly con la política Switch agregada entre Set Variable e invoke" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Hacé clic en la política <strong>Switch</strong> que se acaba de agregar a la secuencia y completar con los siguientes valores:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Title</td><td><code>validar CUIT</code></td></tr>
+        <tr><td>Case 0 condition</td><td><code>$apiCtx().jwt_cuit != $apiCtx().req_cuit</code></td></tr>
+      </table>
+      <img src="assets/images/25b-switch-condition.png" alt="Política Switch con la condición $apiCtx().jwt_cuit != $apiCtx().req_cuit configurada en Case 0" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <!-- <div class="callout callout-warn"><strong>Usar <code>$apiCtx()</code> para acceder a variables del contexto</strong> La función <code>$apiCtx()</code> es la forma correcta en expresiones JSONata del Switch.</div>-->
+      <p>Hacé clic en el signo <strong>+</strong> que está dentro del Switch para agregar una política <strong>Throw</strong>:</p>
+      <img src="assets/images/25c-add-throw.png" alt="Canvas del Switch con la política Throw agregada dentro del Case 0" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Hacé clic sobre la política <strong>Throw</strong> que se agregó a la secuencia para editarla:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Error name</td><td><code>ForbiddenError</code></td></tr>
+        <tr><td>Error status code</td><td><code>403</code></td></tr>
+        <tr><td>Error status reason</td><td><code>Forbidden</code></td></tr>
+        <tr><td>Error message</td><td><code>Acceso denegado: el usuario autenticado no está autorizado a acceder a este recurso.</code></td></tr>
+      </table>
+      <img src="assets/images/25d-throw-details.png" alt="Detalle de la política Throw con ForbiddenError 403 configurado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">26</div><strong>Catalog Property — URL del backend por ambiente</strong></div>
+    <div class="step-body">
+      <p>Ir a <strong>Manage → <code id="cfg-apic-catalog-prop"></code> → Catalog Settings → Properties. </strong> y completá los siguientes valores:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Property name</td><td><code>saldos_backend</code></td></tr>
+        <!-- #TODO: Remove upper line an replace with the one in this comment for dynamic values  
+        <tr><td>Property name</td><td><code class="dyn-val" data-prefix="saldos_backend_">saldos_backend_ceci01</code></td></tr> -->
+        <tr><td>Value</td><td><code id="cfg-mock-saldos-host"></code></td></tr>
+        <tr><td>Protected</td><td>✅ marcado</td></tr>
+      </table>
+      <div class="callout callout-warn"><strong>Las Catalog Properties se sustituyen en el momento de publicación</strong> Si cambiás el valor después de publicar, hay que re-publicar la API.</div>
+      <img src="assets/images/26a-catalog-property.png" alt="Catalog Property saldos_backend con el sufijo del userId y Protected marcado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">27</div><strong>De vuelta al API Studio</strong></div>
+    <div class="step-body">
+      <p>Volvé al <strong>API Studio</strong>. Entrá a tu API, abrí tu policy sequence y hacé clic sobre la policy <strong>Invoke</strong>. Modificá los siguientes valores:</p>
+      <table><tr><th>Campo</th><th>Valor</th></tr><tr><td>URL</td><td><code>$(saldos_backend)/saldos/$(request.parameters.cuit)</code></td></tr></table>
+      <!-- #TODO: Remove upper line an replace with the one in this comment for dynamic values 
+      <table><tr><th>Campo</th><th>Valor</th></tr><tr><td>URL</td><td><code class="dyn-val" data-prefix="$(saldos_backend_" data-suffix=")/saldos/$(request.parameters.cuit)">$(saldos_backend_ceci01)/saldos/$(request.parameters.cuit)</code></td></tr></table>
+    -->
+      <img src="assets/images/27-invoke-details.png" alt="Invoke con la URL que usa la Catalog Property saldos_backend con el sufijo del userId" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+
+    <p class="section-label" id="sec-api-security" style="margin-top:32px">Paso 9 — Configurar el Security Scheme - OAuth2</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">28</div><strong>Crear el Security Scheme en Components</strong></div>
+    <div class="step-body"><p>En OAS 3.0, los security schemes se definen en <strong>Components</strong>. Volver a la API e ir a <strong>Components</strong> en el Outline y dentro de la sección <strong>Security Scheme</strong> hacer clic en el botón <strong>Add Security Scheme → Add a new security scheme</strong>.</p><img src="assets/images/28-components-security-scheme.png" alt="Sección Components del Outline con la opción de agregar Security Scheme" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" /></div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">29</div><strong>Crear el Security Scheme</strong></div>
+    <div class="step-body">
+      <p>Completá los campos iniciales y hacé clic en <strong>Add</strong>:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Security scheme key</td><td><code>saldos-oauth</code></td></tr>
+        <tr><td>Type</td><td><code>oauth2</code></td></tr>
+      </table>
+      <img src="assets/images/29-add-security-scheme.png" alt="Modal de creación del Security Scheme con key saldos-oauth y type oauth2" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">30</div><strong>Configuración seguridad oAuth</strong></div>
+    <div class="step-body">
+      <p>En la ventana de edición del esquema de seguridad, completá con los siguientes valores:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Catálogo</td><td><code id="cfg-sec-scheme-catalog"></code></td></tr>
+         <tr><td>OAuth Provider</td><td><code id="cfg-sec-scheme-oauth-provider"></code></td></tr>
+        <tr><td>Grant Types</td><td>Dejá únicamente <strong>Resource Owner — Password</strong> marcado</td></tr>
+        <tr><td>Token URL</td><td><code id="cfg-token-url"></code></td></tr>
+      </table>
+      <img src="assets/images/30a-security-scheme-grant-types.png" alt="Ventana de edición del Security Scheme con Resource Owner Password seleccionado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <div class="callout callout-info"><strong>¿De dónde viene <code id="cfg-oauth-callout-name">saldos-oauth-ceci01</code> en la Token URL?</strong> Es el <code>Base Path</code> configurado en el OAuth Provider. <code>$(catalog.url)</code> es una variable de APIC que se resuelve en runtime.</div>
+      
+      <p>Debajo, en la sección Scope, hacé clic en el botón <strong>Add scope</strong> y completá:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Name</td><td><code>saldos:read</code></td></tr>
+        <tr><td>Description</td><td><code>Permite consultar el saldo de la cuenta propia</code></td></tr>
+      </table>
+      <img src="assets/images/30c-add-scope.png" alt="Sección Scopes con saldos:read agregado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Hacé clic en <strong>Save</strong>.</p>
+      <p style="margin-top:10px">Desde la <strong>Code View</strong>, validá que el campo <code>components.securitySchemes.saldos-oauth.x-ibm-oauth-provider</code> tenga el valor <code id="cfg-oauth-provider-name"></code>. Si no está, agregalo.</p>
+      <img src="assets/images/30d-validar-x-ibm-oauth-provider.png" alt="Code View con x-ibm-oauth-provider visible en el bloque securitySchemes" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">31</div><strong>Aplicar el Security Requirement a la API</strong></div>
+    <div class="step-body">
+      <p>Ir a <strong>Security → Add Security Scheme</strong> → seleccioná <code>saldos-oauth</code>.</p>
+      <img src="assets/images/31-security-requirement.png" alt="Security requirement aplicados" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">32</div><strong>Agregar <code>scope</code></strong></div>
+    <div class="step-body">
+      <p>Desplegá la opción <strong>scope</strong> y seleccioná la opción <code>saldos:read</code>.</p> 
+      <img src="assets/images/32-add-scope.png" alt="scope:read marcado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+
+  <p class="section-label" id="sec-api-publish" style="margin-top:32px">Paso 10 — Crear el Plan y Producto</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">33</div><strong>Crear un Producto de APIs</strong></div>
+    <div class="step-body">
+      <p>En el Explorer, hacé clic en el signo <strong>+ junto a Products → Create a product from scratch</strong> y completá con los siguientes valores:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Product name</td><td><code class="dyn-val" data-prefix="saldos-">saldos-ceci01</code></td></tr>
+        <tr><td>Version</td><td><code>1.0.0</code></td></tr>
+      </table>
+      <img src="assets/images/33a-create-product.png" alt="Modal de creación del Product con nombre saldos-nn y versión 1.0.0" style="max-width:50%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">34</div><strong>Asociar la API al producto</strong></div>
+    <div class="step-body">
+      <p>En la pantalla de edición del producto, ir a <strong>APIs</strong> → tildar <code class="dyn-val" data-prefix="saldos-">saldos-ceci01</code> y hacé clic en <strong>Save</strong>.</p>
+      <img src="assets/images/34a-add-api.png" alt="Botón Add API en la pantalla de edición del producto" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <img src="assets/images/34b-select-api.png" alt="Modal de selección de API con saldos-nn tildada" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <img src="assets/images/34c-api-linked.png" alt="Product con la API saldos-nn asociada correctamente" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header"><div class="step-num">35</div><strong>Crear un plan de consumo</strong></div>
+    <div class="step-body">
+      <p>Ir a <strong>Plans</strong> → hacé clic en <strong>Add plan</strong>.</p>
+      <img src="assets/images/35a-add-plan.png" alt="Sección Plans con el botón Add plan resaltado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Elegí la opción<strong>Create a new plan</strong> y completá:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Plan name</td><td><code>Base</code></td></tr>
+      </table>
+      <p>Hacé clic en <strong>Add</strong>.</p>
+      <img src="assets/images/35b-new-plan.png" alt="Plan Base creado en el producto" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Una vez agregado el plan <strong>base</strong> hacé clic sobre el nombre o el ícono del lápiz para editarlo.</p>
+      <p>Marcá la opción <strong>Limit Quota</strong> y después hacé clic en el botón <strong>Create a new quota</strong>.</p>
+      <img src="assets/images/35c-plan-created.png" alt="Plan Base creado y visible en la sección Plans del producto" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Completá con los siguientes valores:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Maximum requests</td><td><code>5</code></td></tr>
+        <tr><td>Time Interval</td><td><code>1</code></td></tr>
+        <tr><td>Interval unit</td><td><code>Minutes</code></td></tr>
+        <tr><td>Extensions</td><td><code>DataPower Gateway (v5c) / DataPower API Gateway</code></td></tr>
+        <tr><td>On limit reach</td><td><code>Block</code></td></tr>
+      </table>
+      <p>y hacé clic en <strong>Add</strong> para guardar</p>
+      <img src="assets/images/35d-quota-limit.png" alt="Formulario de quota con Maximum requests 5, Time Interval 1 Minute y On limit reach Block" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+
+  <p class="section-label" id="sec-api-deploy" style="margin-top:32px">Paso 11 — Publicar la API</p>
+  <div class="step">
+    <div class="step-header"><div class="step-num">36</div><strong>Publicar el Producto al catálogo</strong></div>
+    <div class="step-body">
+      <p>Hacer clic en el botón <strong>Publish</strong> que está en la esquina superior derecha. Seleccionar el catálogo de destino y hacer clic en <strong>Next</strong>.</p>
+      <img src="assets/images/36a-publish-details.png" alt="Pantalla de publicación del producto" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Marcar la casilla <strong>Select all</strong> y hacer clic en <strong>Publish</strong>.</p>
+      <img src="assets/images/36b-assets-to-publish.png" alt="Detalle del producto a publicar" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <!-- PARTE 3 — VERIFICACIÓN -->
+  <h2 class="sec-heading" id="sec-test">Parte 3 — Verificación</h2>
+  <div class="step">
+    <div class="step-header"><div class="step-num">37</div><strong>Suscribir la app de prueba al Producto</strong></div>
+    <div class="step-body">
+      <p>Para poder probar tu API, vas a necesitar contar con credenciales. Si bien este paso lo realizan los consumidores desde el catálogo; también se puede hacer desde el API Manager para pruebas internas.</p>
+      <p>En el API Manager, ir a <strong>Manage → <code id="cfg-apic-catalog-subs"></code> → Applications → Add</strong>.</p>
+      <img src="assets/images/37a-applications.png" alt="Sección Applications del catálogo con el botón Add resaltado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Completá con los siguientes valores:</p>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Title</td><td><code class="dyn-val" data-prefix="test-app-">test-app-ceci01</code></td></tr>
+        <tr><td>Consumer organization</td><td><code>Sandbox Test Organization</code></td></tr>
+      </table>
+      <p>y luego hacé clic en <strong>Create</strong>.</p>
+      <img src="assets/images/37b-new-app.png" alt="Formulario de nueva aplicación con Title test-app-nn y Consumer organization completados" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Te aparecerán en pantalla el <strong>Client ID y Client Secret</strong> asociados a tu aplicación.</p>
+      <div class="callout callout-warn"><strong>El Client Secret solo se muestra una vez</strong> Copialo en el momento en que se genera.</div>
+      <p>Ahora, hacé clic en los tres puntos que aparecen a la derecha de tu aplicación y elegí la opción <strong>Create subscription</strong>.</p>
+      <img src="assets/images/37c-app-menu.png" alt="Menú de opciones de la aplicación con Create subscription resaltado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+      <p>Usá la barra de búsqueda para filtrar tu API de la lista. Marcá el plan correspondiente a tu API y hacé clic en <strong>Create Subscription</strong>.</p>
+      <img src="assets/images/37d-create-subscription.png" alt="Modal de creación de suscripción con el plan seleccionado" style="max-width:100%;border:1px solid #E0E0E0;border-radius:2px;margin:12px 0;display:block;" />
+    </div>
+  </div>
+  <div class="callout callout-info" style="margin-top:28px">
+    <strong>¡Hora de Probar tu API!</strong>
+    Podés probar tu API desde la opción Tryout de API Connect, desde la terminal con los comandos <code>curl</code> que aparecen abajo, o usar <a href="https://httpie.io/app" target="_blank" rel="noopener">HTTPie</a> importando la colección preparada para este lab: <a href="files/config/httpie-collection-saldos.json" target="_blank">httpie-collection-saldos.json</a>.
+  </div>
+
+  <table style="margin-top:12px">
+    <tr><th>Datos de Prueba</th><th>Valor</th></tr>
+    <tr><td>Tu API Endpoint</td><td><code id="cfg-test-endpoint"></code></td></tr>
+    <tr><td>Token Endpoint</td><td><code id="cfg-test-token-endpoint"></code></td></tr>
+    <tr><td>CUIT Propio</td><td><code id="cfg-test-cuit-propio"></code></td></tr>
+    <tr><td>Usuario</td><td><code id="cfg-test-usuario"></code></td></tr>
+    <tr><td>Password</td><td><code id="cfg-test-password"></code></td></tr>
+    <tr><td>CUIT Ajeno</td><td><code id="cfg-test-cuit-ajeno"></code></td></tr>
+  </table>
+
+  <p class="section-label" style="margin-top:28px">Verificación 1 — Llamado sin token</p>
+  <div class="pre-wrap"><button class="copy-btn" aria-label="Copiar">Copiar</button><pre id="cfg-curl-401"></pre></div>
+  <div class="callout callout-err"><strong>Respuesta esperada</strong><pre>{ "httpCode": "401", "httpMessage": "Unauthorized", "moreInformation": "Invalid client id or secret." }</pre></div>
+
+  <p class="section-label" style="margin-top:28px">Verificación 2 — Token válido, recurso propio</p>
+  <h3 class="sub-heading" style="margin-top:16px">Paso 1 — Obtener el token</h3>
+  <div class="pre-wrap"><button class="copy-btn" aria-label="Copiar">Copiar</button><pre id="cfg-curl-200-token"></pre></div>
+  <h3 class="sub-heading" style="margin-top:16px">Paso 2 — Llamar a la API con el token</h3>
+  <div class="pre-wrap"><button class="copy-btn" aria-label="Copiar">Copiar</button><pre id="cfg-curl-200"></pre></div>
+  <div class="callout callout-ok"><strong>Respuesta esperada</strong><pre>{ "cuit": "30716595549", "titular": "Constructora del Sur S.A.", "saldo": 4250000, "moneda": "ARS" }</pre></div>
+
+
+  <p class="section-label" style="margin-top:28px">Verificación 3 — Token de otro recurso</p>
+  <div class="pre-wrap"><button class="copy-btn" aria-label="Copiar">Copiar</button><pre id="cfg-curl-403"></pre></div>
+  <div class="callout callout-err"><strong>Respuesta esperada — BOLA bloqueado</strong><pre>{ "httpCode": "403", "httpMessage": "Forbidden", "moreInformation": "Acceso denegado: el usuario autenticado no está autorizado a acceder a este recurso." }</pre></div>
+
+
+  
+  <!-- CIERRE -->
+  <h2 class="sec-heading" id="sec-cierre">¿Qué resolvió API Connect?</h2>
+  <p style="font-size:13px;color:var(--ibm-gray-80);margin-bottom:16px">El equipo de BAPRO resolvió la vulnerabilidad BOLA con un validador JWT custom en el backend. Este lab demostró que esa misma lógica es una <strong>capacidad nativa del gateway</strong>.</p>
+  <table>
+    <tr><th>Aspecto</th><th>Solución custom en el backend</th><th>Solución nativa en API Connect</th></tr>
+    <tr><td><strong>Dónde vive la lógica</strong></td><td>En el microservicio — acoplada al código del backend</td><td>En el Assembly del gateway — independiente del backend</td></tr>
+    <tr><td><strong>Qué pasa si cambia el IdP</strong></td><td>Hay que modificar el validador en el backend</td><td>Se cambia el OAuth Provider en APIC — el Assembly no cambia</td></tr>
+    <tr><td><strong>Visibilidad y auditoría</strong></td><td>Los rechazos 403 quedan en logs del backend — dispersos</td><td>Todos los eventos de autorización quedan en el gateway — centralizados</td></tr>
+    <tr><td><strong>Aplicabilidad a otras APIs</strong></td><td>Hay que replicar el validador en cada microservicio</td><td>La misma Policy Sequence se reutiliza en cualquier API del catálogo</td></tr>
+  </table>
+  <div class="callout callout-info" style="margin-top:20px">
+    <strong>Evolución — IBM Verify SaaS</strong>
+    En este lab usamos el OAuth Provider nativo de APIC. Sin embargo, de requerir funcionalidades más avanzadas (por ej. gestión de consentimientos) se reemplazaría ese provider por <strong>IBM Verify</strong> como Authorization Server externo. Los cambios en el Assembly serían mínimos: solo se agrega una política <strong>Validate JWT</strong> con el JWKS URI de Verify. El Set Variable → Switch → Throw no cambia.
+  </div>
+
+  <!-- TROUBLESHOOTING -->
+  <h2 class="sec-heading" id="sec-troubleshooting">Troubleshooting</h2>
+  <p style="font-size:13px;color:var(--ibm-gray-80);margin-bottom:20px">Errores conocidos que pueden aparecer durante el despliegue o las pruebas de la API, con su causa y forma de resolverlos.</p>
+
+  <h3 class="sub-heading">"Empty root level API security is not a secure practice."</h3>
+  <p style="font-size:13px;color:var(--ibm-gray-80);margin-bottom:8px">Este error aparece al publicar el Producto si el YAML de la API tiene un Security Requirement vacío <code>{}</code> junto al requerimiento real.</p>
+  <div class="callout callout-err">
+    <strong>Causa</strong> Al agregar el Security Scheme desde la UI, el API Studio a veces inserta una entrada vacía en el array <code>security</code> del YAML además de la entrada correcta.
+  </div>
+  <div class="callout callout-ok">
+    <strong>Solución</strong> Ir a <strong>API editor → ícono Source</strong> y verificar que el bloque <code>security</code> tenga exactamente una entrada:<br><br>
+    <code>security:<br>&nbsp;&nbsp;- saldos-oauth:<br>&nbsp;&nbsp;&nbsp;&nbsp;- saldos:read</code><br><br>
+    Eliminá cualquier línea <code>- {}</code> que aparezca antes o después. Guardá y volvé a publicar.
+  </div>
+
+</main>
+
+<script>
+/* ── LAB SETUP & DYNAMIC PARAMETERIZATION ────────────────────────────────── */
+const DEFAULT_SETUP = { abbr: 'CECI', num: '01' };
+
+function getStoredSetup() {
+  try {
+    const raw = localStorage.getItem('apic_lab_setup');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.abbr && parsed.num) return parsed;
+    }
+  } catch (e) {
+    console.warn('Error reading localStorage', e);
+  }
+  return DEFAULT_SETUP;
+}
+
+function computeUserId(setup) {
+  const abbr = (setup.abbr || '').trim().toLowerCase();
+  const num = (setup.num || '').trim();
+  return (abbr && num) ? (abbr + num) : 'ceci01';
+}
+
+function openLabSetupModal() {
+  const setup = getStoredSetup();
+  document.getElementById('setup-abbr').value = setup.abbr || '';
+  document.getElementById('setup-num').value = setup.num || '';
+  updateSetupPreview();
+  const modal = document.getElementById('modal-setup');
+  modal.classList.add('open');
+  document.getElementById('setup-abbr').focus();
+}
+
+function closeLabSetupModal() {
+  const modal = document.getElementById('modal-setup');
+  modal.classList.remove('open');
+}
+
+function handleBackdropClick(event) {
+  if (event.target === document.getElementById('modal-setup')) {
+    closeLabSetupModal();
+  }
+}
+
+function updateSetupPreview() {
+  const abbrInput = document.getElementById('setup-abbr');
+  const numInput = document.getElementById('setup-num');
+
+  // Solo permitir letras en abbr y números en num
+  abbrInput.value = abbrInput.value.replace(/[^a-zA-Z]/g, '').toUpperCase();
+  numInput.value = numInput.value.replace(/[^0-9]/g, '');
+
+  const abbr = abbrInput.value.trim().toLowerCase();
+  const num = numInput.value.trim();
+  const combined = (abbr || 'ceci') + (num || '01');
+  document.getElementById('setup-preview').textContent = combined;
+}
+
+function saveLabSetup() {
+  const abbrInput = document.getElementById('setup-abbr');
+  const numInput = document.getElementById('setup-num');
+
+  let abbr = abbrInput.value.trim().toUpperCase();
+  let num = numInput.value.trim();
+
+  if (!abbr || abbr.length < 2) abbr = 'CECI';
+  if (!num) num = '01';
+
+  const setupData = { abbr: abbr, num: num };
+  try {
+    localStorage.setItem('apic_lab_setup', JSON.stringify(setupData));
+  } catch (e) {
+    console.warn('Error saving to localStorage', e);
+  }
+
+  applyLabSetup(setupData);
+  closeLabSetupModal();
+}
+
+function applyLabSetup(setup) {
+  const userId = computeUserId(setup);
+  const displayBadge = ((setup.abbr || 'CECI') + (setup.num || '01')).toUpperCase();
+
+  // Actualizar top nav badge y callout
+  const navBadge = document.getElementById('nav-setup-badge');
+  if (navBadge) navBadge.textContent = displayBadge;
+
+  const calloutBadge = document.getElementById('callout-env-badge');
+  if (calloutBadge) calloutBadge.textContent = userId;
+
+  const calloutIcon = document.getElementById('callout-env-icon');
+  if (calloutIcon) calloutIcon.textContent = (setup.num || '01');
+
+  // Actualizar todos los elementos con class="dyn-val"
+  document.querySelectorAll('.dyn-val').forEach(function (el) {
+    const prefix = el.getAttribute('data-prefix') || '';
+    const suffix = el.getAttribute('data-suffix') || '';
+    el.textContent = prefix + userId + suffix;
+  });
+
+  // Re-render de valores estáticos y dinámicos del lab
+  if (typeof LAB_CONFIG !== 'undefined') {
+    const c = LAB_CONFIG;
+
+    // Valores del OAuth Provider: prefijo de datos-ambiente.js + userId
+    const oauthProviderName = "saldos-oauth-provider";
+    // #TODO: Remove upper line an replace with the one in this comment for dynamic values
+    //const oauthProviderName = c.oauth_provider_name + '-' + userId;
+    const oauthBasePath = c.oauth_base_path + '-' + userId;
+
+    const elOAuthTitle = document.getElementById('cfg-oauth-title');
+    if (elOAuthTitle) elOAuthTitle.textContent = oauthProviderName;
+
+    const elOAuthName = document.getElementById('cfg-oauth-name');
+    if (elOAuthName) elOAuthName.textContent = oauthProviderName;
+
+    const elOAuthBasePath = document.getElementById('cfg-oauth-basepath');
+    if (elOAuthBasePath) elOAuthBasePath.textContent = oauthBasePath;
+
+    // URLs en tablas de configuración
+    const elAuthUrl = document.getElementById('cfg-mock-auth-url');
+    if (elAuthUrl) elAuthUrl.textContent = c.mock_auth_host + '/auth';
+
+    const elSaldosHost = document.getElementById('cfg-mock-saldos-host');
+    if (elSaldosHost) elSaldosHost.textContent = c.mock_saldos_host;
+
+    // Nombre del catálogo
+    ['cfg-apic-catalog', 'cfg-apic-catalog-oauth', 'cfg-apic-catalog-prop',
+     'cfg-apic-catalog-subs', 'cfg-sec-scheme-catalog'].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = c.apic_catalog;
+    });
+
+    const elSecOAuth = document.getElementById('cfg-sec-scheme-oauth-provider');
+    if (elSecOAuth) elSecOAuth.textContent = oauthProviderName;
+
+    const elOAuthProviderName = document.getElementById('cfg-oauth-provider-name');
+    if (elOAuthProviderName) elOAuthProviderName.textContent = oauthProviderName;
+
+    const elOAuthNameCatalog = document.getElementById('cfg-oauth-name-catalog');
+    if (elOAuthNameCatalog) elOAuthNameCatalog.textContent = oauthProviderName;
+
+    const elCuitParam = document.getElementById('cfg-cuit-propio-param');
+    if (elCuitParam) elCuitParam.textContent = c.cuit_propio;
+
+    // Tabla de datos de prueba
+    const base = c.gw_host + '/' + c.apic_org + '/' + c.apic_catalog;
+    const testEndpoint = document.getElementById('cfg-test-endpoint');
+    if (testEndpoint) testEndpoint.textContent = base + '/saldos' + userId + '/{cuit}/obtenersaldo';
+
+    const testTokenEndpoint = document.getElementById('cfg-test-token-endpoint');
+    if (testTokenEndpoint) testTokenEndpoint.textContent = base + '/' + oauthProviderName + '/oauth2/token';
+
+    const tokenUrl = document.getElementById('cfg-token-url');
+    if (tokenUrl) tokenUrl.textContent = 'https://$(catalog.url)/' + oauthProviderName + '/oauth2/token';
+
+    const elOAuthCalloutName = document.getElementById('cfg-oauth-callout-name');
+    if (elOAuthCalloutName) elOAuthCalloutName.textContent = oauthProviderName;
+
+    const elCuitPropio = document.getElementById('cfg-test-cuit-propio');
+    if (elCuitPropio) elCuitPropio.textContent = c.cuit_propio;
+
+    const elTestUser = document.getElementById('cfg-test-usuario');
+    if (elTestUser) elTestUser.textContent = c.cuit_propio;
+
+    const elTestPass = document.getElementById('cfg-test-password');
+    if (elTestPass) elTestPass.textContent = c.pwd_mock_saldos;
+
+    const elTestAjeno = document.getElementById('cfg-test-cuit-ajeno');
+    if (elTestAjeno) elTestAjeno.textContent = c.cuit_ajeno;
+
+    // Comandos curl dinámicos con userId
+    const curl401 = document.getElementById('cfg-curl-401');
+    if (curl401) {
+      curl401.innerHTML =
+        'curl -k --request GET \\\n' +
+        '  --url "' + base + '/saldos' + userId + '/<span class="v">' + c.cuit_propio + '</span>/obtenersaldo"';
+    }
+
+    const curl403 = document.getElementById('cfg-curl-403');
+    if (curl403) {
+      curl403.innerHTML =
+        'curl -k --request GET \\\n' +
+        '  --url "' + base + '/saldos' + userId + '/<span class="v">' + c.cuit_ajeno + '</span>/obtenersaldo" \\\n' +
+        '  --header \'Authorization: Bearer <span class="v">MISMO_TOKEN</span>\'';
+    }
+
+    const curl200Token = document.getElementById('cfg-curl-200-token');
+    if (curl200Token) {
+      curl200Token.innerHTML =
+        'curl -k --request POST \\\n' +
+        '  --url "' + base + '/' + oauthProviderName + '/oauth2/token" \\\n' +
+        '  --header \'Content-Type: application/x-www-form-urlencoded\' \\\n' +
+        '  --data grant_type=password \\\n' +
+        '  --data client_id=<span class="v">TU_CLIENT_ID</span> \\\n' +
+        '  --data client_secret=<span class="v">TU_CLIENT_SECRET</span> \\\n' +
+        '  --data scope=saldos:read \\\n' +
+        '  --data username=' + c.cuit_propio + ' \\\n' +
+        '  --data password=' + c.pwd_mock_saldos;
+    }
+
+    const curl200 = document.getElementById('cfg-curl-200');
+    if (curl200) {
+      curl200.innerHTML =
+        'curl -k --request GET \\\n' +
+        '  --url "' + base + '/saldos' + userId + '/<span class="v">' + c.cuit_propio + '</span>/obtenersaldo" \\\n' +
+        '  --header \'Authorization: Bearer <span class="v">ACCESS_TOKEN</span>\'';
+    }
+  }
+}
+
+// Inicialización automática
+document.addEventListener('DOMContentLoaded', function () {
+  const initialSetup = getStoredSetup();
+  applyLabSetup(initialSetup);
+});
+
+// Cerrar modal con tecla Escape
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') closeLabSetupModal();
+});
+</script>
+
+<script>
+(function () {
+  document.querySelectorAll('.pre-wrap .copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var pre = btn.parentElement.querySelector('pre');
+      navigator.clipboard.writeText(pre.textContent).then(function () {
+        btn.textContent = '✓ Copiado';
+        btn.classList.add('copied');
+        setTimeout(function () {
+          btn.textContent = 'Copiar';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    });
+  });
+})();
+</script>
+
+<footer class="page-footer">
+  <span>Workshop API Connect · Banco Provincia · 2026</span>
+  <span class="footer-ibm">IBM</span>
+</footer>
+
+<button id="btn-back-top" title="Volver al inicio" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  window.addEventListener('scroll', function() {
+    document.getElementById('btn-back-top')
+      .classList.toggle('visible', window.scrollY > 400);
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,69 @@
+kind: DataPowerAssembly
+apiVersion: api.ibm.com/v1
+metadata:
+  name: saldos-assembly
+  namespace: saldos
+  version: '1.0'
+  tags: []
+  labels:
+    gatewayTypes:
+      - datapower
+spec:
+  x-ibm-configuration:
+    gateway: datapower-api-gateway
+    assembly:
+      execute:
+        - set-variable:
+            version: 2.0.0
+            title: Extraer CUIT
+            actions:
+              - set: jwt_cuit
+                value: $(oauth.verified_access_token.resource_owner)
+                type: string
+              - set: req_cuit
+                value: $(request.parameters.cuit)
+                type: string
+            description: Extraer CUIT del token y del path
+        - switch:
+            version: 2.1.0
+            title: validar CUIT
+            case:
+              - condition: $apiCtx().jwt_cuit != $apiCtx().req_cuit
+                execute:
+                  - throw:
+                      version: 2.1.0
+                      title: 403 Forbidden
+                      name: ForbiddenError
+                      error-status-code: '403'
+                      error-status-reason: Forbidden
+                      message: >-
+                        Acceso denegado: el usuario autenticado no está
+                        autorizado a acceder a este recurso.
+            description: Verifica si el CUIT del JWT es distinto al del request
+        - invoke:
+            version: 2.3.0
+            title: invoke-saldos
+            backend-type: detect
+            header-control:
+              type: blocklist
+              values: []
+            parameter-control:
+              type: allowlist
+              values: []
+            http-version: HTTP/1.1
+            timeout: 60
+            verb: keep
+            chunked-uploads: true
+            persistent-connection: true
+            cache-response: protocol
+            cache-ttl: 900
+            websocket-upgrade: false
+            graphql-send-type: detect
+            target-url: $(saldos_backend)/saldos/$(request.parameters.cuit)
+            description: ''
+    phase: realized
+    enforced: true
+    testable: true
+    cors:
+      enabled: true
+    catalogs: {}
